@@ -1,0 +1,31 @@
+# Seed drugs (verify each has a brand reference drug and 3+ generic labelers)
+# Start with only the first two while building; add the rest later.
+seed_drugs:
+  - montelukast
+  - zolpidem
+  - gabapentin
+  - tramadol
+  - ciprofloxacin
+  - levofloxacin
+  - metformin
+  - atorvastatin
+  - levothyroxine
+  - warfarin
+  - clopidogrel
+  - citalopram
+  - escitalopram
+  - sertraline
+  - fluoxetine
+  - methotrexate
+  - amiodarone
+  - ondansetron
+  - losartan
+  - lisinopril
+  - amlodipine
+  - tizanidine
+  - cyclobenzaprine
+  - finasteride
+  - duloxetine
+start_with:
+  - warfarin
+  - montelukast
