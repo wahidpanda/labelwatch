@@ -33,6 +33,7 @@ jobs:
       ENV: test
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/label_lag_radar
       DATABASE_URL_MIGRATIONS: postgresql://postgres:postgres@localhost:5432/label_lag_radar
+      TEST_DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/label_lag_radar
       LANGSMITH_TRACING: "false"
     steps:
       - uses: actions/checkout@v7

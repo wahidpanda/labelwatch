@@ -34,6 +34,9 @@ switch ($Task) {
         Exec $frontend @('npm', 'run', 'dev')
     }
     'test' {
+        if (-not $env:TEST_DATABASE_URL) {
+            $env:TEST_DATABASE_URL = 'postgresql+asyncpg://postgres@localhost:5433/label_lag_radar_test'
+        }
         ExecUv $backend @('run', 'pytest')
         Exec $frontend @('npx', 'vitest', 'run', '--coverage')
     }

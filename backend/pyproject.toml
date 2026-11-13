@@ -39,7 +39,9 @@ files = ["app", "tests"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+markers = ["integration: needs TEST_DATABASE_URL pointing at a disposable Postgres"]
 testpaths = ["tests"]
 addopts = "--cov=app --cov-report=term-missing --cov-fail-under=80"
 
