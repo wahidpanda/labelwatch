@@ -1,0 +1,53 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  --font-mono: ui-monospace, Consolas, monospace;
+
+  --color-surface: oklch(0.99 0.003 95);
+  --color-surface-muted: oklch(0.96 0.005 95);
+  --color-ink: oklch(0.22 0.02 260);
+  --color-ink-muted: oklch(0.45 0.02 260);
+  --color-line: oklch(0.9 0.006 95);
+  --color-accent: oklch(0.45 0.09 230);
+}
+
+@layer base {
+  html {
+    color-scheme: light dark;
+  }
+
+  body {
+    @apply bg-surface text-ink font-sans antialiased;
+  }
+
+  .dark body {
+    --color-surface: oklch(0.18 0.01 260);
+    --color-surface-muted: oklch(0.23 0.012 260);
+    --color-ink: oklch(0.94 0.005 95);
+    --color-ink-muted: oklch(0.72 0.01 260);
+    --color-line: oklch(0.32 0.012 260);
+    --color-accent: oklch(0.75 0.09 230);
+  }
+
+  h1,
+  h2 {
+    @apply font-serif;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
