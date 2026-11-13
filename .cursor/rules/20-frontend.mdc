@@ -1,0 +1,10 @@
+---
+description: Frontend conventions
+globs: frontend/src/**/*.{ts,tsx}
+alwaysApply: false
+---
+- TypeScript strict, no any. Use the generated API client only; no hand-written fetch except the SSE client.
+- Server state in TanStack Query. URL holds filters.
+- Accessible by default: labels, roles, focus order, aria-live for streams.
+- Status is never conveyed by colour alone.
+- Voice models load lazily after explicit consent.

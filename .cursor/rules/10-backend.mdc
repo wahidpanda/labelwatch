@@ -1,0 +1,11 @@
+---
+description: Backend conventions
+globs: backend/**/*.py
+alwaysApply: false
+---
+- Python 3.12, async everywhere, SQLAlchemy 2 style, Pydantic v2 models for all I/O.
+- Layers: api -> services -> repositories. No SQL in routers.
+- All outbound HTTP through the allow-listed client with timeouts and retries.
+- All LLM access through app/llm/factory.py. Structured output, cache, budget check, tracing rules.
+- Stream-parse XML. Keep memory low.
+- Type hints required; mypy strict on app/.

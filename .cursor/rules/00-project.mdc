@@ -1,0 +1,10 @@
+---
+description: Label Lag Radar project rules
+alwaysApply: true
+---
+- Source of truth is docs/SPEC.md. Check it before designing anything.
+- Free and open source only. No paid services, no credit card dependencies.
+- Never invent library APIs; read installed source or docs. Record spec deviations in docs/adr/.
+- Small commits per task. Run tests, ruff, mypy, eslint and tsc before finishing a task.
+- UI and assistant copy must follow the wording rules in section 3 of the spec.
+- Every displayed claim links to verified evidence.

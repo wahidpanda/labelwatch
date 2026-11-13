@@ -1,0 +1,8 @@
+---
+description: Testing rules
+globs: **/tests/**
+alwaysApply: false
+---
+- No live network or live LLM calls in tests. Use cassettes and fake chat models.
+- Every bug fix gets a regression test.
+- Quote verification and lag logic need property-based or table-driven tests.

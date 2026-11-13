@@ -17,4 +17,10 @@ prompts/
 .DS_Store
 .idea/
 .vscode/
-.cursor/
+.cursor/*
+!.cursor/rules/
+# coverage / build
+.coverage
+htmlcov/
+coverage/
+*.tsbuildinfo

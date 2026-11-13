@@ -1,0 +1,8 @@
+---
+description: Database and migrations
+globs: supabase/migrations/**/*.sql
+alwaysApply: false
+---
+- Forward-only migrations. Never edit an applied file; add a new one.
+- RLS enabled on every table. No policies for anon or authenticated.
+- Keep the database small: dedupe text by hash, store only safety sections, never raw SPL files.
