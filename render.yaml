@@ -12,6 +12,8 @@ services:
     envVars:
       - key: ENV
         value: prod
+      - key: PORT
+        value: "8000"
       - key: DATABASE_URL
         sync: false
       - key: DATABASE_URL_MIGRATIONS
