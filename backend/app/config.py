@@ -57,6 +57,7 @@ class Settings(BaseSettings):
     langsmith_project: str = "label-lag-radar-dev"
     trace_sample_rate: float = Field(default=0.2, ge=0.0, le=1.0)
 
+    rate_limit_per_minute: int = 60
     db_size_limit_mb: int = 400
     stale_days: int = 90
 

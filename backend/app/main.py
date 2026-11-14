@@ -11,7 +11,12 @@ from app.config import Settings, get_settings
 from app.db.session import create_engine, create_session_factory
 from app.errors import register_error_handlers
 from app.logging import configure_logging
-from app.middleware import REQUEST_ID_HEADER, RequestContextMiddleware
+from app.middleware import (
+    REQUEST_ID_HEADER,
+    RateLimitMiddleware,
+    RequestContextMiddleware,
+    SecurityHeadersMiddleware,
+)
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -37,6 +42,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.state.settings = settings
 
+    app.add_middleware(RateLimitMiddleware, per_minute=settings.rate_limit_per_minute)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -45,6 +51,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["Authorization", "Content-Type", REQUEST_ID_HEADER],
         expose_headers=[REQUEST_ID_HEADER],
     )
+    app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(RequestContextMiddleware)
     register_error_handlers(app)
 
