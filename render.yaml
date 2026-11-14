@@ -1,0 +1,32 @@
+# Render Blueprint: free Docker web service for the API.
+# Secrets are marked sync: false and must be filled in the Render dashboard.
+services:
+  - type: web
+    name: label-lag-radar-api
+    runtime: docker
+    plan: free
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: ENV
+        value: prod
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_MIGRATIONS
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_JWKS_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: CONTACT_EMAIL
+        sync: false
+      - key: STALE_DAYS
+        value: "90"
+      - key: DB_SIZE_LIMIT_MB
+        value: "400"
+      - key: LANGSMITH_TRACING
+        value: "false"
