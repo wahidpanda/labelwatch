@@ -1,0 +1,59 @@
+name: Nightly pipeline
+
+# Daily ingest, detect and judge. The daily database traffic also keeps the free Supabase
+# project from pausing after 7 idle days.
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      max_calls:
+        description: LLM call cap per drug and step
+        default: "40"
+
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      ENV: prod
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL_MIGRATIONS: ${{ secrets.DATABASE_URL_MIGRATIONS }}
+      CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
+      LLM_PROVIDER_ORDER: ${{ vars.LLM_PROVIDER_ORDER || 'google_genai,groq' }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      LLM_MODEL_CLASSIFY_google_genai: ${{ vars.LLM_MODEL_CLASSIFY_GOOGLE_GENAI }}
+      LLM_MODEL_JUDGE_google_genai: ${{ vars.LLM_MODEL_JUDGE_GOOGLE_GENAI }}
+      LLM_MODEL_CLASSIFY_groq: ${{ vars.LLM_MODEL_CLASSIFY_GROQ }}
+      LLM_MODEL_JUDGE_groq: ${{ vars.LLM_MODEL_JUDGE_GROQ }}
+      LLM_RPS_google_genai: "0.2"
+      LANGSMITH_TRACING: "false"
+      MAX_CALLS: ${{ inputs.max_calls || '40' }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - run: uv sync --frozen --no-dev
+      - name: Migrate
+        run: uv run python -m app.db.migrate
+      - name: Ingest seed drugs
+        run: uv run python -m app.worker ingest --start-with
+      - name: Detect and judge
+        # Budget limits end a step early with status partial; the next night resumes.
+        run: |
+          drugs=$(uv run python -c "from app.ingest.seeds import load_seed_drugs; print(' '.join('--drug ' + d for d in load_seed_drugs(start_with_only=True)))")
+          uv run python -m app.worker detect $drugs --max-calls "$MAX_CALLS" || true
+          uv run python -m app.worker judge $drugs --max-calls "$MAX_CALLS" || true
