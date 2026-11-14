@@ -1,0 +1,74 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - dailymed.nlm.nih.gov
+    method: GET
+    uri: https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?pagesize=100&page=1&application_number=NDA020829
+  response:
+    body:
+      string: '{"data": [{"spl_version": 5, "published_date": "Jun 25, 2025", "title":
+        "SINGULAIR (MONTELUKAST SODIUM) GRANULE SINGULAIR (MONTELUKAST SODIUM) TABLET,
+        CHEWABLE SINGULAIR (MONTELUKAST SODIUM) TABLET, FILM COATED [ORGANON LLC]",
+        "setid": "482dcc92-b47f-4ea6-854a-f5ac2aea7842"}, {"spl_version": 1, "published_date":
+        "Feb 21, 2012", "title": "SINGULAIR (MONTELUKAST SODIUM) TABLET, CHEWABLE
+        SINGULAIR (MONTELUKAST SODIUM) TABLET, FILM COATED [PHYSICIANS TOTAL CARE,
+        INC.]", "setid": "e8d9021d-73aa-4c96-8b8a-e90069e78555"}, {"spl_version":
+        1, "published_date": "Dec 10, 2010", "title": "SINGULAIR (MONTELUKAST SODIUM)
+        TABLET, CHEWABLE SINGULAIR (MONTELUKAST SODIUM) TABLET, FILM COATED [REBEL
+        DISTRIBUTORS CORP]", "setid": "78eea56d-15a6-4ceb-b755-d1a3e9707f32"}, {"spl_version":
+        1, "published_date": "Mar 03, 2010", "title": "SINGULAIR (MONTELUKAST SODIUM)
+        TABLET, CHEWABLE SINGULAIR (MONTELUKAST SODIUM) TABLET, FILM COATED [DISPENSING
+        SOLUTIONS INC.]", "setid": "10cd5ca5-6f8b-417c-af11-a2054a2dde34"}], "metadata":
+        {"db_published_date": "Nov 12, 2026 08:11:57PM EST", "elements_per_page":
+        100, "current_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls.json?pagesize=100&page=1&application_number=NDA020829",
+        "next_page_url": "null", "total_elements": 4, "total_pages": 1, "current_page":
+        1, "previous_page": "null", "previous_page_url": "null", "next_page": "null"}}'
+    headers:
+      allow:
+      - GET, HEAD, OPTIONS
+      connection:
+      - keep-alive
+      content-length:
+      - '1380'
+      content-security-policy:
+      - 'script-src ''self'' ''unsafe-inline'' ajax.googleapis.com; font-src ''self'';
+        style-src ''self'' ''unsafe-inline'' ajax.googleapis.com; img-src ''self''
+        data: ajax.googleapis.com; default-src ''self''; report-uri https://nlmoccs.report-uri.com/r/d/csp/reportOnly'
+      content-type:
+      - application/json
+      cross-origin-opener-policy:
+      - same-origin
+      date:
+      - Sat, 14 Nov 2026 01:44:05 GMT
+      referrer-policy:
+      - same-origin
+      server:
+      - nginx
+      set-cookie:
+      - AWSALB=D7Q4jG0TE2TgvJN4gXt4ew1SQZaRZI/pLjfpEw4613i/dBi9CMcfNqodpwhioCvMEpBFvY4Gm4wgtcQAXOGxpxDJdPsPUwrblwU5j8QFudy52QZRQutUOFJm7b6E;
+        Expires=Sat, 21 Nov 2026 01:44:05 GMT; Path=/
+      - AWSALBCORS=D7Q4jG0TE2TgvJN4gXt4ew1SQZaRZI/pLjfpEw4613i/dBi9CMcfNqodpwhioCvMEpBFvY4Gm4wgtcQAXOGxpxDJdPsPUwrblwU5j8QFudy52QZRQutUOFJm7b6E;
+        Expires=Sat, 21 Nov 2026 01:44:05 GMT; Path=/; SameSite=None; Secure
+      status:
+      - 200 OK
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      - max-age=31536000; includeSubDomains; preload
+      vary:
+      - Accept
+      x-content-type-options:
+      - nosniff
+      x-powered-by:
+      - Phusion Passenger(R)
+    status:
+      code: 200
+      message: OK
+version: 1

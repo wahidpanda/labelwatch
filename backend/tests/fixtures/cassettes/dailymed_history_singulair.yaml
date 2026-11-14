@@ -1,0 +1,67 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - dailymed.nlm.nih.gov
+    method: GET
+    uri: https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/482dcc92-b47f-4ea6-854a-f5ac2aea7842/history.json
+  response:
+    body:
+      string: '{"data": {"spl": {"title": "SINGULAIR (MONTELUKAST SODIUM) GRANULE
+        SINGULAIR (MONTELUKAST SODIUM) TABLET, CHEWABLE SINGULAIR (MONTELUKAST SODIUM)
+        TABLET, FILM COATED [ORGANON LLC]", "setid": "482dcc92-b47f-4ea6-854a-f5ac2aea7842"},
+        "history": [{"spl_version": 5, "published_date": "Jun 25, 2025"}, {"spl_version":
+        4, "published_date": "Oct 17, 2024"}, {"spl_version": 3, "published_date":
+        "Nov 21, 2023"}, {"spl_version": 2, "published_date": "Jun 14, 2022"}, {"spl_version":
+        1, "published_date": "Jun 01, 2021"}]}, "metadata": {"db_published_date":
+        "Nov 12, 2026 08:11:57PM EST", "elements_per_page": 100, "current_url": "https://dailymed.nlm.nih.gov/dailymed/services/v2/spls/482dcc92-b47f-4ea6-854a-f5ac2aea7842/history.json",
+        "next_page_url": "null", "total_elements": 5, "total_pages": 1, "current_page":
+        1, "previous_page": "null", "previous_page_url": "null", "next_page": "null"}}'
+    headers:
+      allow:
+      - GET, HEAD, OPTIONS
+      connection:
+      - keep-alive
+      content-length:
+      - '888'
+      content-security-policy:
+      - 'img-src ''self'' data: ajax.googleapis.com; default-src ''self''; script-src
+        ''self'' ''unsafe-inline'' ajax.googleapis.com; style-src ''self'' ''unsafe-inline''
+        ajax.googleapis.com; font-src ''self''; report-uri https://nlmoccs.report-uri.com/r/d/csp/reportOnly'
+      content-type:
+      - application/json
+      cross-origin-opener-policy:
+      - same-origin
+      date:
+      - Sat, 14 Nov 2026 01:44:06 GMT
+      referrer-policy:
+      - same-origin
+      server:
+      - nginx
+      set-cookie:
+      - AWSALB=f7axNf4lnNiWhhLVg3Z4VnvALBkr/0mynG1u91w0Nky5mAlm43TK4hIGH4cpNmgItJsIyh6Cipzzb7+P0CmmmmKkOHnCPCBrQWSjegeOuhPs2YvmZCQRwQloO2Kz;
+        Expires=Sat, 21 Nov 2026 01:44:06 GMT; Path=/
+      - AWSALBCORS=f7axNf4lnNiWhhLVg3Z4VnvALBkr/0mynG1u91w0Nky5mAlm43TK4hIGH4cpNmgItJsIyh6Cipzzb7+P0CmmmmKkOHnCPCBrQWSjegeOuhPs2YvmZCQRwQloO2Kz;
+        Expires=Sat, 21 Nov 2026 01:44:06 GMT; Path=/; SameSite=None; Secure
+      status:
+      - 200 OK
+      strict-transport-security:
+      - max-age=31536000; includeSubDomains; preload
+      - max-age=31536000; includeSubDomains; preload
+      vary:
+      - Accept
+      x-content-type-options:
+      - nosniff
+      x-powered-by:
+      - Phusion Passenger(R)
+    status:
+      code: 200
+      message: OK
+version: 1
