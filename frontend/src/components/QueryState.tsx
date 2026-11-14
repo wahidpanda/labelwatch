@@ -21,9 +21,19 @@ export function QueryState<T>({
   }
   if (query.isError) {
     const notFound = query.error instanceof ApiError && query.error.status === 404
+    const unauthorized = query.error instanceof ApiError && query.error.status === 401
+    const network =
+      query.error instanceof TypeError ||
+      (query.error instanceof Error && query.error.message === 'Failed to fetch')
     return (
       <p role="alert" className="text-destructive">
-        {notFound ? `No ${label} found.` : `Could not load ${label}: ${query.error.message}`}
+        {notFound
+          ? `No ${label} found.`
+          : unauthorized
+            ? `Could not load ${label}: sign in required (wahid / wahid).`
+            : network
+              ? `Could not load ${label}: network or CORS error. Sign in, refresh, or check API CORS_ORIGINS.`
+              : `Could not load ${label}: ${query.error.message}`}
       </p>
     )
   }

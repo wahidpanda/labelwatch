@@ -24,6 +24,7 @@ services:
         sync: false
       - key: CORS_ORIGINS
         sync: false
+        # Example: https://labelwatch.islamoahidul12.workers.dev,http://localhost:5173
       - key: CONTACT_EMAIL
         sync: false
       - key: STALE_DAYS

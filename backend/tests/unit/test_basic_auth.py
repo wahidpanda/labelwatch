@@ -28,6 +28,14 @@ async def test_basic_auth_blocks_api(auth_settings: Settings) -> None:
     async with AsyncClient(transport=transport, base_url="http://test") as client:
         denied = await client.get("/api/v1/methodology")
         assert denied.status_code == 401
+        preflight = await client.options(
+            "/api/v1/methodology",
+            headers={
+                "Origin": "http://localhost:5173",
+                "Access-Control-Request-Method": "GET",
+            },
+        )
+        assert preflight.status_code == 200
         assert (await client.get("/healthz")).status_code == 200
 
 

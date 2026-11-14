@@ -43,18 +43,19 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.state.settings = settings
 
-    app.add_middleware(RateLimitMiddleware, per_minute=settings.rate_limit_per_minute)
+    # Basic auth is added first so CORS (added later) wraps 401/preflight responses.
+    app.add_middleware(BasicAuthMiddleware, settings=settings)
+    app.add_middleware(RequestContextMiddleware)
+    app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
         allow_credentials=False,
-        allow_methods=["GET", "POST"],
+        allow_methods=["GET", "POST", "OPTIONS"],
         allow_headers=["Authorization", "Content-Type", REQUEST_ID_HEADER],
         expose_headers=[REQUEST_ID_HEADER],
     )
-    app.add_middleware(SecurityHeadersMiddleware)
-    app.add_middleware(RequestContextMiddleware)
-    app.add_middleware(BasicAuthMiddleware, settings=settings)
+    app.add_middleware(RateLimitMiddleware, per_minute=settings.rate_limit_per_minute)
     register_error_handlers(app)
 
     # Probes also live at the root so hosts can health-check without the API prefix.

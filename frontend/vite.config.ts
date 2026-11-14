@@ -15,7 +15,10 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
     include: ['tests/**/*.test.{ts,tsx}'],
-    env: { VITE_API_BASE_URL: 'http://localhost:8000' },
+    env: {
+      VITE_API_BASE_URL: 'http://localhost:8000',
+      VITE_SITE_AUTH_REQUIRED: 'false',
+    },
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],

@@ -34,7 +34,13 @@ class BasicAuthMiddleware:
         return user_ok and pw_ok and bool(self._user) and bool(self._password)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        if scope["type"] != "http" or not self._enabled or self._exempt(scope["path"]):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        if scope.get("method") == "OPTIONS":
+            await self.app(scope, receive, send)
+            return
+        if not self._enabled or self._exempt(scope["path"]):
             await self.app(scope, receive, send)
             return
         request = Request(scope)

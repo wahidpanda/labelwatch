@@ -2,7 +2,14 @@ const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?
 
 const KEY = 'llr_basic_auth'
 
-export const authRequired = import.meta.env.VITE_SITE_AUTH_REQUIRED === 'true'
+/** Login gate: explicit env, or any non-local API in production builds. */
+export const authRequired =
+  import.meta.env.VITE_SITE_AUTH_REQUIRED === 'true' ||
+  (import.meta.env.VITE_SITE_AUTH_REQUIRED !== 'false' &&
+    import.meta.env.MODE === 'production' &&
+    Boolean(API_BASE_URL) &&
+    !API_BASE_URL.includes('localhost') &&
+    !API_BASE_URL.includes('127.0.0.1'))
 
 function encodeBasic(username: string, password: string): string {
   const bytes = new TextEncoder().encode(`${username}:${password}`)
