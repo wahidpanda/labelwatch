@@ -304,6 +304,18 @@ class TraceBudget(Base):
     traces: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
 
 
+class LlmCache(Base):
+    __tablename__ = "llm_cache"
+
+    cache_key: Mapped[str] = mapped_column(Text, primary_key=True)
+    task: Mapped[str] = mapped_column(Text, nullable=False)
+    prompt_version: Mapped[str] = mapped_column(Text, nullable=False)
+    model: Mapped[str] = mapped_column(Text, nullable=False)
+    provider: Mapped[str] = mapped_column(Text, nullable=False)
+    output: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    created_at: Mapped[datetime] = _created_at()
+
+
 class AuditLog(Base):
     __tablename__ = "audit_log"
 
