@@ -157,6 +157,92 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/leaflets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Leaflets */
+        get: operations["list_leaflets_api_v1_leaflets_get"];
+        put?: never;
+        /** Check Leaflet */
+        post: operations["check_leaflet_api_v1_leaflets_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/leaflets/extract": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Extract Leaflet */
+        post: operations["extract_leaflet_api_v1_leaflets_extract_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/leaflets/{check_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Leaflet */
+        get: operations["get_leaflet_api_v1_leaflets__check_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/medicines": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Medicine */
+        post: operations["add_medicine_api_v1_medicines_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/medicines/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search Medicines */
+        get: operations["search_medicines_api_v1_medicines_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/methodology": {
         parameters: {
             query?: never;
@@ -229,6 +315,28 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Body_extract_leaflet_api_v1_leaflets_extract_post */
+        Body_extract_leaflet_api_v1_leaflets_extract_post: {
+            /** File */
+            file: string;
+        };
+        /** Consistency */
+        Consistency: {
+            /**
+             * Compared
+             * @default 0
+             */
+            compared: number;
+            /** Duplicate Of */
+            duplicate_of?: string | null;
+            /**
+             * Flagged
+             * @default false
+             */
+            flagged: boolean;
+            /** Max Similarity */
+            max_similarity?: number | null;
+        };
         /** DrugMatrix */
         DrugMatrix: {
             /** Events */
@@ -327,6 +435,28 @@ export interface components {
             /** Severity */
             severity: string;
         };
+        /** ExtractOut */
+        ExtractOut: {
+            /** Chars */
+            chars: number;
+            /** Language */
+            language: string;
+            /** Legible */
+            legible: boolean;
+            /** Pages */
+            pages: number;
+            /** Sha256 */
+            sha256: string;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "pdf_text" | "vision";
+            /** Text */
+            text: string;
+            /** Unclear Parts */
+            unclear_parts: string[];
+        };
         /** FirstVersion */
         FirstVersion: {
             /**
@@ -395,6 +525,156 @@ export interface components {
              */
             status: "propagated" | "partial" | "not_propagated" | "insufficient_evidence";
         };
+        /** LeafletCheckIn */
+        LeafletCheckIn: {
+            /** Brand Name */
+            brand_name: string;
+            /**
+             * Country
+             * @default BD
+             */
+            country: string;
+            /**
+             * Drug Id
+             * Format: uuid
+             */
+            drug_id: string;
+            /** File Sha256 */
+            file_sha256?: string | null;
+            /** Manufacturer */
+            manufacturer?: string | null;
+            /** Registration No */
+            registration_no?: string | null;
+            /**
+             * Source
+             * @default typed
+             * @enum {string}
+             */
+            source: "pdf_text" | "vision" | "typed";
+            /** Text */
+            text: string;
+        };
+        /** LeafletCheckOut */
+        LeafletCheckOut: {
+            /** Brand Name */
+            brand_name: string;
+            consistency: components["schemas"]["Consistency"];
+            /** Country */
+            country: string;
+            counts: components["schemas"]["StatusCounts"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Drug Id
+             * Format: uuid
+             */
+            drug_id: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Ingredient */
+            ingredient: string;
+            /** Leaflet Text */
+            leaflet_text: string;
+            /** Manufacturer */
+            manufacturer: string | null;
+            /** Model */
+            model: string | null;
+            /** Provider */
+            provider: string | null;
+            /** Registration No */
+            registration_no: string | null;
+            /** Results */
+            results: components["schemas"]["LeafletResult"][];
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "pdf_text" | "vision" | "typed";
+            /**
+             * Verified
+             * @default false
+             */
+            verified: boolean;
+        };
+        /** LeafletResult */
+        LeafletResult: {
+            /** Claim Text */
+            claim_text: string;
+            /**
+             * Event Date
+             * Format: date
+             */
+            event_date: string;
+            /**
+             * Event Id
+             * Format: uuid
+             */
+            event_id: string;
+            /**
+             * Method
+             * @enum {string}
+             */
+            method: "baseline_exact" | "llm";
+            /** Quotes */
+            quotes: string[];
+            /** Rationale */
+            rationale: string;
+            /** Section Key */
+            section_key: string;
+            /** Severity */
+            severity: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "propagated" | "partial" | "not_propagated" | "insufficient_evidence";
+        };
+        /** LeafletSummary */
+        LeafletSummary: {
+            /** Brand Name */
+            brand_name: string;
+            consistency: components["schemas"]["Consistency"];
+            /** Country */
+            country: string;
+            counts: components["schemas"]["StatusCounts"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Drug Id
+             * Format: uuid
+             */
+            drug_id: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Ingredient */
+            ingredient: string;
+            /** Manufacturer */
+            manufacturer: string | null;
+            /** Registration No */
+            registration_no: string | null;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "pdf_text" | "vision" | "typed";
+            /**
+             * Verified
+             * @default false
+             */
+            verified: boolean;
+        };
         /** MatrixCell */
         MatrixCell: {
             /**
@@ -436,6 +716,34 @@ export interface components {
                 [key: string]: components["schemas"]["MatrixCell"];
             };
             generic_set: components["schemas"]["GenericSetRef"];
+        };
+        /** MedicineIn */
+        MedicineIn: {
+            /** Name */
+            name: string;
+        };
+        /** MedicineOut */
+        MedicineOut: {
+            /** Created */
+            created: boolean;
+            /**
+             * Drug Id
+             * Format: uuid
+             */
+            drug_id: string;
+            /** Has Labels */
+            has_labels: boolean;
+            /** Ingredient */
+            ingredient: string;
+        };
+        /** MedicineSuggestion */
+        MedicineSuggestion: {
+            /** Applications */
+            applications: number;
+            /** Drug Id */
+            drug_id?: string | null;
+            /** Name */
+            name: string;
         };
         /** Methodology */
         Methodology: {
@@ -486,6 +794,13 @@ export interface components {
         Page_JudgementOut_: {
             /** Items */
             items: components["schemas"]["JudgementOut"][];
+            /** Next Cursor */
+            next_cursor?: string | null;
+        };
+        /** Page[LeafletSummary] */
+        Page_LeafletSummary_: {
+            /** Items */
+            items: components["schemas"]["LeafletSummary"][];
             /** Next Cursor */
             next_cursor?: string | null;
         };
@@ -850,6 +1165,200 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JudgementOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_leaflets_api_v1_leaflets_get: {
+        parameters: {
+            query?: {
+                drug_id?: string | null;
+                limit?: number;
+                cursor?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Page_LeafletSummary_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    check_leaflet_api_v1_leaflets_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LeafletCheckIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeafletCheckOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    extract_leaflet_api_v1_leaflets_extract_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_extract_leaflet_api_v1_leaflets_extract_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_leaflet_api_v1_leaflets__check_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                check_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LeafletCheckOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_medicine_api_v1_medicines_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MedicineIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MedicineOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_medicines_api_v1_medicines_search_get: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MedicineSuggestion"][];
                 };
             };
             /** @description Validation Error */

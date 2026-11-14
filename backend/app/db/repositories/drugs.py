@@ -1,10 +1,11 @@
 import uuid
+from datetime import UTC, datetime
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Drug
+from app.db.models import Drug, SplSet
 
 
 class DrugRepository:
@@ -47,6 +48,29 @@ class DrugRepository:
         return await self._session.scalar(
             select(Drug).where(Drug.ingredient_norm == ingredient_norm)
         )
+
+    async def request(self, ingredient: str, ingredient_norm: str) -> tuple[Drug, bool]:
+        """Add a user-requested medicine. Returns the row and whether it was created."""
+        existing = await self.get_by_norm(ingredient_norm)
+        if existing is not None:
+            return existing, False
+        drug = Drug(
+            ingredient=ingredient, ingredient_norm=ingredient_norm, requested_at=datetime.now(UTC)
+        )
+        self._session.add(drug)
+        await self._session.flush()
+        await self._session.refresh(drug)
+        return drug, True
+
+    async def has_labels(self, drug_id: uuid.UUID) -> bool:
+        found = await self._session.scalar(
+            select(SplSet.id).where(SplSet.drug_id == drug_id).limit(1)
+        )
+        return found is not None
+
+    async def all_ingredients(self) -> list[str]:
+        result = await self._session.scalars(select(Drug.ingredient_norm).order_by(Drug.created_at))
+        return list(result)
 
     async def list_seeds(self) -> list[Drug]:
         result = await self._session.scalars(

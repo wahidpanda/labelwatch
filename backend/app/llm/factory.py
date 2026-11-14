@@ -182,10 +182,11 @@ class StructuredLLM:
         self,
         schema: type[T],
         system: str,
-        user: str,
+        user: str | list[str | dict[str, Any]],
         *,
         metadata: dict[str, Any] | None = None,
     ) -> LlmResult[T]:
+        """`user` is text, or LangChain content blocks when images are attached."""
         if not self._configs:
             raise LlmUnavailableError(f"No LLM provider is configured for {self.task}")
         budget_errors: list[BudgetExceededError] = []

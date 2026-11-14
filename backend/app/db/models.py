@@ -66,6 +66,7 @@ class Drug(Base):
     rxcui: Mapped[str | None] = mapped_column(Text)
     drug_class: Mapped[str | None] = mapped_column(Text)
     is_seed: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("false"))
+    requested_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = _created_at()
 
 
@@ -313,6 +314,31 @@ class LlmCache(Base):
     model: Mapped[str] = mapped_column(Text, nullable=False)
     provider: Mapped[str] = mapped_column(Text, nullable=False)
     output: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    created_at: Mapped[datetime] = _created_at()
+
+
+class LeafletCheck(Base):
+    __tablename__ = "leaflet_checks"
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    drug_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("drugs.id", ondelete="CASCADE"), nullable=False
+    )
+    country: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'BD'"))
+    brand_name: Mapped[str] = mapped_column(Text, nullable=False)
+    manufacturer: Mapped[str | None] = mapped_column(Text)
+    registration_no: Mapped[str | None] = mapped_column(Text)
+    source: Mapped[str] = mapped_column(Text, nullable=False)
+    file_sha256: Mapped[str | None] = mapped_column(Text)
+    leaflet_text: Mapped[str] = mapped_column(Text, nullable=False)
+    results: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, nullable=False)
+    counts: Mapped[dict[str, int]] = mapped_column(JSONB, nullable=False)
+    consistency: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
+    )
+    prompt_version: Mapped[str] = mapped_column(Text, nullable=False)
+    provider: Mapped[str | None] = mapped_column(Text)
+    model: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = _created_at()
 
 

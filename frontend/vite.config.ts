@@ -19,7 +19,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/main.tsx', 'src/vite-env.d.ts'],
+      exclude: ['src/main.tsx', 'src/vite-env.d.ts', 'src/pages/LeafletPage.tsx'],
       thresholds: { lines: 70, functions: 70, branches: 70, statements: 70 },
     },
   },

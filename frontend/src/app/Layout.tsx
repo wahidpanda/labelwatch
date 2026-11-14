@@ -27,6 +27,11 @@ export function Layout() {
                 </NavLink>
               </li>
               <li>
+                <NavLink to="/leaflet" className="hover:underline aria-[current=page]:font-semibold">
+                  Leaflet check (BD)
+                </NavLink>
+              </li>
+              <li>
                 <NavLink
                   to="/methodology"
                   className="hover:underline aria-[current=page]:font-semibold"

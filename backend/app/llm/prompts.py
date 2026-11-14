@@ -37,6 +37,34 @@ ASSISTANT_SYSTEM = (
 )
 
 
+OCR_SYSTEM = (
+    "You transcribe a photographed or scanned medicine package leaflet. Copy every word exactly "
+    "as printed, in its original language (English or Bangla), keeping headings and line order. "
+    "Never translate, summarise, correct or guess. If a word cannot be read, write [unclear] in "
+    "its place and describe the spot in unclear_parts."
+)
+
+LEAFLET_SYSTEM = (
+    "You check whether a medicine leaflet contains the safety information from changes made to "
+    "the US brand label. The leaflet may be in English, Bangla or both. For each numbered CHANGE "
+    "give one verdict:\n"
+    "1. propagated: the leaflet states the same safety meaning; wording or language may differ.\n"
+    "2. partial: some but not all elements are present.\n"
+    "3. not_propagated: the leaflet does not carry this information.\n"
+    "4. insufficient_evidence: the leaflet text is unclear or incomplete for this change.\n"
+    "Quote only text that appears word for word in the LEAFLET, in its original language. Never "
+    "translate inside quotes. Decide only from the supplied text. Do not give medical advice and "
+    "never call a leaflet wrong, unsafe or non-compliant."
+)
+
+
+def leaflet_user(changes: list[tuple[int, str, str]], leaflet: str) -> str:
+    listed = "\n".join(
+        f"CHANGE {n}: {claim}\nUS LABEL TEXT {n}: {brand_unit}" for n, claim, brand_unit in changes
+    )
+    return f"{listed}\n\nLEAFLET:\n{leaflet}"
+
+
 def classify_user(section_key: str, change_kind: str, new_unit: str, old_unit: str | None) -> str:
     lines = [f"SECTION: {section_key}", f"CHANGE: {change_kind}"]
     if old_unit:

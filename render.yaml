@@ -32,3 +32,18 @@ services:
         value: "400"
       - key: LANGSMITH_TRACING
         value: "false"
+      # Leaflet text extraction and checks call the LLM from the API.
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: LLM_PROVIDER_ORDER
+        value: google_genai,openrouter
+      - key: LLM_MODEL_JUDGE_google_genai
+        value: gemini-flash-latest
+      - key: LLM_MODEL_JUDGE_openrouter
+        value: nvidia/nemotron-3.5-super-vl:free
+      - key: LLM_RPS_google_genai
+        value: "0.2"
+      - key: LLM_RPS_openrouter
+        value: "0.2"

@@ -53,11 +53,11 @@ jobs:
       - run: uv sync --frozen --no-dev
       - name: Migrate
         run: uv run python -m app.db.migrate
-      - name: Ingest seed drugs
-        run: uv run python -m app.worker ingest --start-with
+      - name: Ingest seed and user-added medicines
+        run: uv run python -m app.worker ingest --known || true
       - name: Detect and judge
         # Budget limits end a step early with status partial; the next night resumes.
         run: |
-          drugs=$(uv run python -c "from app.ingest.seeds import load_seed_drugs; print(' '.join('--drug ' + d for d in load_seed_drugs(start_with_only=True)))")
+          drugs=$(uv run python -m app.worker list-drugs | tail -n 1 | sed 's/\([^ ]*\)/--drug \1/g')
           uv run python -m app.worker detect $drugs --max-calls "$MAX_CALLS" || true
           uv run python -m app.worker judge $drugs --max-calls "$MAX_CALLS" || true

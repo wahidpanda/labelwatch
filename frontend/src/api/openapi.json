@@ -1,6 +1,59 @@
 {
   "components": {
     "schemas": {
+      "Body_extract_leaflet_api_v1_leaflets_extract_post": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_extract_leaflet_api_v1_leaflets_extract_post",
+        "type": "object"
+      },
+      "Consistency": {
+        "properties": {
+          "compared": {
+            "default": 0,
+            "title": "Compared",
+            "type": "integer"
+          },
+          "duplicate_of": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duplicate Of"
+          },
+          "flagged": {
+            "default": false,
+            "title": "Flagged",
+            "type": "boolean"
+          },
+          "max_similarity": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Similarity"
+          }
+        },
+        "title": "Consistency",
+        "type": "object"
+      },
       "DrugMatrix": {
         "properties": {
           "events": {
@@ -234,6 +287,61 @@
         "title": "EventSummary",
         "type": "object"
       },
+      "ExtractOut": {
+        "properties": {
+          "chars": {
+            "title": "Chars",
+            "type": "integer"
+          },
+          "language": {
+            "title": "Language",
+            "type": "string"
+          },
+          "legible": {
+            "title": "Legible",
+            "type": "boolean"
+          },
+          "pages": {
+            "title": "Pages",
+            "type": "integer"
+          },
+          "sha256": {
+            "title": "Sha256",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "pdf_text",
+              "vision"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "unclear_parts": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unclear Parts",
+            "type": "array"
+          }
+        },
+        "required": [
+          "text",
+          "source",
+          "pages",
+          "sha256",
+          "language",
+          "legible",
+          "unclear_parts",
+          "chars"
+        ],
+        "title": "ExtractOut",
+        "type": "object"
+      },
       "FirstVersion": {
         "properties": {
           "date": {
@@ -413,6 +521,367 @@
         "title": "JudgementOut",
         "type": "object"
       },
+      "LeafletCheckIn": {
+        "properties": {
+          "brand_name": {
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Brand Name",
+            "type": "string"
+          },
+          "country": {
+            "default": "BD",
+            "pattern": "^[A-Z]{2}$",
+            "title": "Country",
+            "type": "string"
+          },
+          "drug_id": {
+            "format": "uuid",
+            "title": "Drug Id",
+            "type": "string"
+          },
+          "file_sha256": {
+            "anyOf": [
+              {
+                "pattern": "^[0-9a-f]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Sha256"
+          },
+          "manufacturer": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manufacturer"
+          },
+          "registration_no": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registration No"
+          },
+          "source": {
+            "default": "typed",
+            "enum": [
+              "pdf_text",
+              "vision",
+              "typed"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 30000,
+            "minLength": 40,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "drug_id",
+          "brand_name",
+          "text"
+        ],
+        "title": "LeafletCheckIn",
+        "type": "object"
+      },
+      "LeafletCheckOut": {
+        "properties": {
+          "brand_name": {
+            "title": "Brand Name",
+            "type": "string"
+          },
+          "consistency": {
+            "$ref": "#/components/schemas/Consistency"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/StatusCounts"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "drug_id": {
+            "format": "uuid",
+            "title": "Drug Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "ingredient": {
+            "title": "Ingredient",
+            "type": "string"
+          },
+          "leaflet_text": {
+            "title": "Leaflet Text",
+            "type": "string"
+          },
+          "manufacturer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manufacturer"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "registration_no": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registration No"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/LeafletResult"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "source": {
+            "enum": [
+              "pdf_text",
+              "vision",
+              "typed"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "verified": {
+            "default": false,
+            "title": "Verified",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "drug_id",
+          "ingredient",
+          "country",
+          "brand_name",
+          "manufacturer",
+          "registration_no",
+          "source",
+          "counts",
+          "consistency",
+          "created_at",
+          "leaflet_text",
+          "results",
+          "provider",
+          "model"
+        ],
+        "title": "LeafletCheckOut",
+        "type": "object"
+      },
+      "LeafletResult": {
+        "properties": {
+          "claim_text": {
+            "title": "Claim Text",
+            "type": "string"
+          },
+          "event_date": {
+            "format": "date",
+            "title": "Event Date",
+            "type": "string"
+          },
+          "event_id": {
+            "format": "uuid",
+            "title": "Event Id",
+            "type": "string"
+          },
+          "method": {
+            "enum": [
+              "baseline_exact",
+              "llm"
+            ],
+            "title": "Method",
+            "type": "string"
+          },
+          "quotes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Quotes",
+            "type": "array"
+          },
+          "rationale": {
+            "title": "Rationale",
+            "type": "string"
+          },
+          "section_key": {
+            "title": "Section Key",
+            "type": "string"
+          },
+          "severity": {
+            "title": "Severity",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "propagated",
+              "partial",
+              "not_propagated",
+              "insufficient_evidence"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "event_id",
+          "event_date",
+          "section_key",
+          "severity",
+          "claim_text",
+          "status",
+          "method",
+          "quotes",
+          "rationale"
+        ],
+        "title": "LeafletResult",
+        "type": "object"
+      },
+      "LeafletSummary": {
+        "properties": {
+          "brand_name": {
+            "title": "Brand Name",
+            "type": "string"
+          },
+          "consistency": {
+            "$ref": "#/components/schemas/Consistency"
+          },
+          "country": {
+            "title": "Country",
+            "type": "string"
+          },
+          "counts": {
+            "$ref": "#/components/schemas/StatusCounts"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "drug_id": {
+            "format": "uuid",
+            "title": "Drug Id",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "ingredient": {
+            "title": "Ingredient",
+            "type": "string"
+          },
+          "manufacturer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manufacturer"
+          },
+          "registration_no": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Registration No"
+          },
+          "source": {
+            "enum": [
+              "pdf_text",
+              "vision",
+              "typed"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "verified": {
+            "default": false,
+            "title": "Verified",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "drug_id",
+          "ingredient",
+          "country",
+          "brand_name",
+          "manufacturer",
+          "registration_no",
+          "source",
+          "counts",
+          "consistency",
+          "created_at"
+        ],
+        "title": "LeafletSummary",
+        "type": "object"
+      },
       "MatrixCell": {
         "properties": {
           "judgement_id": {
@@ -503,6 +972,80 @@
           "cells"
         ],
         "title": "MatrixRow",
+        "type": "object"
+      },
+      "MedicineIn": {
+        "properties": {
+          "name": {
+            "maxLength": 80,
+            "minLength": 2,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "MedicineIn",
+        "type": "object"
+      },
+      "MedicineOut": {
+        "properties": {
+          "created": {
+            "title": "Created",
+            "type": "boolean"
+          },
+          "drug_id": {
+            "format": "uuid",
+            "title": "Drug Id",
+            "type": "string"
+          },
+          "has_labels": {
+            "title": "Has Labels",
+            "type": "boolean"
+          },
+          "ingredient": {
+            "title": "Ingredient",
+            "type": "string"
+          }
+        },
+        "required": [
+          "drug_id",
+          "ingredient",
+          "created",
+          "has_labels"
+        ],
+        "title": "MedicineOut",
+        "type": "object"
+      },
+      "MedicineSuggestion": {
+        "properties": {
+          "applications": {
+            "title": "Applications",
+            "type": "integer"
+          },
+          "drug_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drug Id"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "applications"
+        ],
+        "title": "MedicineSuggestion",
         "type": "object"
       },
       "Methodology": {
@@ -680,6 +1223,33 @@
           "items"
         ],
         "title": "Page[JudgementOut]",
+        "type": "object"
+      },
+      "Page_LeafletSummary_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/LeafletSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "Page[LeafletSummary]",
         "type": "object"
       },
       "Page_StaleGeneric_": {
@@ -1498,6 +2068,297 @@
         "summary": "Get Judgement",
         "tags": [
           "catalog"
+        ]
+      }
+    },
+    "/api/v1/leaflets": {
+      "get": {
+        "operationId": "list_leaflets_api_v1_leaflets_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "drug_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Drug Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 25,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_LeafletSummary_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Leaflets",
+        "tags": [
+          "leaflets"
+        ]
+      },
+      "post": {
+        "operationId": "check_leaflet_api_v1_leaflets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LeafletCheckIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeafletCheckOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Check Leaflet",
+        "tags": [
+          "leaflets"
+        ]
+      }
+    },
+    "/api/v1/leaflets/extract": {
+      "post": {
+        "operationId": "extract_leaflet_api_v1_leaflets_extract_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_extract_leaflet_api_v1_leaflets_extract_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExtractOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Extract Leaflet",
+        "tags": [
+          "leaflets"
+        ]
+      }
+    },
+    "/api/v1/leaflets/{check_id}": {
+      "get": {
+        "operationId": "get_leaflet_api_v1_leaflets__check_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "check_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Check Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LeafletCheckOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Leaflet",
+        "tags": [
+          "leaflets"
+        ]
+      }
+    },
+    "/api/v1/medicines": {
+      "post": {
+        "operationId": "add_medicine_api_v1_medicines_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MedicineIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MedicineOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Add Medicine",
+        "tags": [
+          "medicines"
+        ]
+      }
+    },
+    "/api/v1/medicines/search": {
+      "get": {
+        "operationId": "search_medicines_api_v1_medicines_search_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "maxLength": 60,
+              "minLength": 2,
+              "title": "Q",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MedicineSuggestion"
+                  },
+                  "title": "Response Search Medicines Api V1 Medicines Search Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search Medicines",
+        "tags": [
+          "medicines"
         ]
       }
     },

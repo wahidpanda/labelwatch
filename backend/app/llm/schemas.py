@@ -34,3 +34,27 @@ class JudgeOut(BaseModel):
     rationale: str = Field(description="At most 40 words")
 
     _rationale = field_validator("rationale")(_max_words(40))
+
+
+class OcrOut(BaseModel):
+    text: str = Field(description="All leaflet text, transcribed exactly, in reading order")
+    language: Literal["en", "bn", "mixed", "other"]
+    legible: bool = Field(description="False if most of the text cannot be read")
+    unclear_parts: list[str] = Field(
+        default_factory=list, description="Short descriptions of parts that could not be read"
+    )
+
+
+class LeafletItemOut(BaseModel):
+    change: int = Field(description="The CHANGE number this verdict is for")
+    status: Literal["propagated", "partial", "not_propagated", "insufficient_evidence"]
+    quotes: list[str] = Field(
+        default_factory=list, description="Sentences copied exactly from the leaflet"
+    )
+    rationale: str = Field(description="At most 30 words")
+
+    _rationale = field_validator("rationale")(_max_words(30))
+
+
+class LeafletBatchOut(BaseModel):
+    items: list[LeafletItemOut]

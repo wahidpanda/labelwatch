@@ -6,6 +6,7 @@ import sys
 from collections.abc import Sequence
 
 from app.config import Settings, get_settings
+from app.db.repositories.drugs import DrugRepository
 from app.db.session import create_engine, create_session_factory
 from app.detect.events import EventDetector
 from app.ingest.dailymed import DailyMedClient
@@ -29,6 +30,9 @@ def build_parser() -> argparse.ArgumentParser:
     source.add_argument("--drug", action="append", help="Ingredient name; repeatable")
     source.add_argument("--seed", action="store_true", help="All drugs in config/seed_drugs.yaml")
     source.add_argument("--start-with", action="store_true", help="The start_with seed subset")
+    source.add_argument(
+        "--known", action="store_true", help="start_with seeds plus every medicine in the database"
+    )
     ingest.add_argument(
         "--mode", choices=[m.value for m in IngestMode], default=IngestMode.VERSIONS.value
     )
@@ -38,12 +42,27 @@ def build_parser() -> argparse.ArgumentParser:
     judge = commands.add_parser("judge", help="Judge propagation of events into generic labels")
     judge.add_argument("--drug", action="append", required=True, help="Ingredient; repeatable")
     judge.add_argument("--max-calls", type=int, default=None, help="Cap on LLM calls per drug")
+    commands.add_parser("list-drugs", help="Print start_with seeds and database medicines")
     return parser
 
 
-def resolve_drugs(args: argparse.Namespace) -> list[str]:
-    names = list(args.drug or load_seed_drugs(start_with_only=bool(args.start_with)))
+def resolve_drugs(args: argparse.Namespace, known: Sequence[str] = ()) -> list[str]:
+    if args.drug:
+        names = list(args.drug)
+    elif getattr(args, "known", False):
+        names = [*load_seed_drugs(start_with_only=True), *known]
+    else:
+        names = load_seed_drugs(start_with_only=bool(args.start_with))
     return list(dict.fromkeys(normalize_ingredient(n) for n in names))
+
+
+async def database_drugs(settings: Settings) -> list[str]:
+    engine = create_engine(settings)
+    try:
+        async with create_session_factory(engine)() as session:
+            return await DrugRepository(session).all_ingredients()
+    finally:
+        await engine.dispose()
 
 
 async def run_ingest(settings: Settings, drugs: list[str], mode: IngestMode) -> int:
@@ -97,6 +116,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     settings = get_settings()
     configure_logging(settings.log_level, json=settings.env != "dev")
+    if args.command == "list-drugs":
+        args.drug, args.known = None, True
+        print(" ".join(resolve_drugs(args, asyncio.run(database_drugs(settings)))))
+        return 0
     if args.command in ("detect", "judge"):
         drugs = list(dict.fromkeys(normalize_ingredient(n) for n in args.drug))
         failures = asyncio.run(run_llm_command(settings, args.command, drugs, args.max_calls))
@@ -104,7 +127,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     if not settings.contact_email:
         log.error("contact_email_missing", hint="Set CONTACT_EMAIL for the DailyMed User-Agent")
         return 2
-    drugs = resolve_drugs(args)
+    known = asyncio.run(database_drugs(settings)) if args.known else []
+    drugs = resolve_drugs(args, known)
     failures = asyncio.run(run_ingest(settings, drugs, IngestMode(args.mode)))
     return 1 if failures else 0
 
