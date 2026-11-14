@@ -68,7 +68,7 @@ Start by confirming your plan for Phase 0, then execute.
 | --- | --- | --- |
 | Supabase Free | 500 MB database, 1 GB file storage, 5 GB egress, 50,000 auth users, project pauses after 7 idle days | Content-addressed section store, 25 seed drugs, database size guard at 400 MB, weekly keep-alive job, browser never talks to Supabase directly |
 | LangSmith Developer | 1 seat, 5,000 traces a month, hard cap until a card is added, 14-day retention | Trace sampling, one root trace per batch, trace budget counter, local evaluation runner |
-| Free LLM APIs (Gemini, Groq, OpenRouter free models) | Per-model rate and daily limits that change without notice; limits are shown in each provider console | Provider-agnostic factory, model names in env, database job queue with daily budgets, cache by content hash, Ollama local fallback |
+| LLM APIs (Gemini, Groq, OpenRouter) | Per-model rate and daily limits that change without notice; limits are shown in each provider console | Provider-agnostic factory, model names in env, database job queue with daily budgets, cache by content hash, Ollama local fallback |
 | Render free web service | Sleeps when idle, slow wake-up, small RAM, 5 GB bandwidth | Stateless API, heavy work in GitHub Actions, lazy loading |
 | Cloudflare Pages | Free static hosting, no card | Hosts the React app |
 | GitHub Actions | Free minutes (generous for public repos) (verify private limits) | Nightly ingestion and judging jobs |
@@ -688,7 +688,7 @@ Assistant system prompt (summary of requirements): answer only from tool results
 
 Frontend variable: VITE\_API\_BASE\_URL, plus the Supabase URL and anon key for admin sign-in only.
 
-**Free-tier caveats to state in the README.** The API sleeps when idle and the first request after a pause is slow; Supabase pauses after 7 idle days unless the keep-alive runs; free LLM quotas change without notice, so the daily caps are env values; LangSmith traces vanish after 14 days. For real production traffic, the upgrade path is a paid Render instance and the Supabase Pro plan; the code needs no change.
+**Free-tier caveats to state in the README.** The API sleeps when idle and the first request after a pause is slow; Supabase pauses after 7 idle days unless the keep-alive runs; LLM provider quotas change without notice, so the daily caps are env values; LangSmith traces vanish after 14 days. For real production traffic, the upgrade path is a paid Render instance and the Supabase Pro plan; the code needs no change.
 
 ## 17. Cursor rule files (.cursor/rules)
 
@@ -841,7 +841,7 @@ Phase 10. Complete section 15 and 16: Dockerfile hardening, nightly ingest and k
 
 | Risk | Mitigation |
 | --- | --- |
-| Free LLM quota runs out or changes | Provider fallback, env caps, job deferral, cache, Ollama fallback, deterministic shortcuts that skip the model |
+| LLM quota runs out or changes | Provider fallback, env caps, job deferral, cache, Ollama fallback, deterministic shortcuts that skip the model |
 | Database passes 500 MB | Hash-deduplicated sections, safety sections only, size guard at 400 MB, fewer seed drugs |
 | LangSmith 5,000-trace cap | Batch parent traces, sampling, trace budget, local evaluation runner |
 | ANDA to brand linking is wrong | Confidence score, manual override table, show link method in the UI |

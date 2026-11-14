@@ -29,7 +29,7 @@ If Cursor shows an error: copy the error and paste it back into the same chat. S
 
 ## D. Accounts (create later, when a phase needs them, all free)
 - Supabase (database): needed at Phase 1. Copy keys into `backend/.env` (copy `.env.example` to `.env`).
-- Google AI Studio and Groq (free LLM keys): needed at Phase 3.
+- Google AI Studio and Groq (LLM provider keys): needed at Phase 3.
 - LangSmith (tracing): needed at Phase 4.
 - Render and Cloudflare Pages (hosting): needed at Phase 10.
 
