@@ -5,7 +5,7 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.migrate import DEFAULT_MIGRATIONS_DIR, MigrationError, apply_migrations
+from app.db.migrate import DEFAULT_MIGRATIONS_DIR, MigrationError, apply_migrations, discover
 from app.db.repositories.health import HealthRepository
 from tests.integration.conftest import TEST_DATABASE_URL
 
@@ -66,4 +66,4 @@ async def test_materialized_view_refreshes(session: AsyncSession) -> None:
 async def test_readiness_reports_latest_schema_version(session: AsyncSession) -> None:
     repo = HealthRepository(session)
     await repo.ping()
-    assert await repo.schema_version() == "0002"
+    assert await repo.schema_version() == discover(DEFAULT_MIGRATIONS_DIR)[-1].version
