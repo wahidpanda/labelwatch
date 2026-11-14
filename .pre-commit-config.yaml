@@ -4,7 +4,9 @@ repos:
     rev: v6.0.0
     hooks:
       - id: trailing-whitespace
+        exclude: ^backend/tests/fixtures/
       - id: end-of-file-fixer
+        exclude: ^backend/tests/fixtures/
       - id: check-yaml
       - id: check-merge-conflict
       - id: check-added-large-files
