@@ -143,6 +143,23 @@ class LabelRepository:
             )
         )
 
+    async def parsed_versions(self, spl_set_id: uuid.UUID) -> list[SplVersion]:
+        result = await self._session.scalars(
+            select(SplVersion)
+            .where(SplVersion.spl_set_id == spl_set_id, SplVersion.raw_sha256.is_not(None))
+            .order_by(SplVersion.version)
+        )
+        return list(result)
+
+    async def sections_for_version(self, version_id: uuid.UUID) -> dict[str, tuple[str, str]]:
+        """section_key -> (text_hash, body) for one version."""
+        rows = await self._session.execute(
+            select(VersionSection.section_key, SectionText.hash, SectionText.body)
+            .join(SectionText, SectionText.hash == VersionSection.text_hash)
+            .where(VersionSection.version_id == version_id)
+        )
+        return {key: (digest, body) for key, digest, body in rows.all()}
+
     async def get_section_text(self, version_id: uuid.UUID, section_key: str) -> str | None:
         return await self._session.scalar(
             select(SectionText.body)
