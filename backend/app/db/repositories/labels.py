@@ -2,7 +2,7 @@ import hashlib
 import uuid
 from datetime import date
 
-from sqlalchemy import select
+from sqlalchemy import func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -56,6 +56,34 @@ class LabelRepository:
     async def get_set_by_setid(self, setid: uuid.UUID) -> SplSet | None:
         return await self._session.scalar(select(SplSet).where(SplSet.setid == setid))
 
+    async def mark_checked(
+        self, spl_set_id: uuid.UUID, *, latest_version: int, latest_published: date
+    ) -> None:
+        await self._session.execute(
+            update(SplSet)
+            .where(SplSet.id == spl_set_id)
+            .values(
+                latest_version=latest_version,
+                latest_published=latest_published,
+                last_checked_at=func.now(),
+            )
+        )
+
+    async def parsed_version_ids(self, spl_set_id: uuid.UUID) -> set[uuid.UUID]:
+        """Versions already downloaded; raw_sha256 is written with the sections in one commit."""
+        result = await self._session.scalars(
+            select(SplVersion.id).where(
+                SplVersion.spl_set_id == spl_set_id, SplVersion.raw_sha256.is_not(None)
+            )
+        )
+        return set(result)
+
+    async def list_sets_for_drug(self, drug_id: uuid.UUID) -> list[SplSet]:
+        result = await self._session.scalars(
+            select(SplSet).where(SplSet.drug_id == drug_id).order_by(SplSet.role, SplSet.title)
+        )
+        return list(result)
+
     async def upsert_version(
         self,
         *,
@@ -77,7 +105,7 @@ class LabelRepository:
             set_={
                 "published_date": stmt.excluded.published_date,
                 "source_url": stmt.excluded.source_url,
-                "raw_sha256": stmt.excluded.raw_sha256,
+                "raw_sha256": func.coalesce(stmt.excluded.raw_sha256, SplVersion.raw_sha256),
             },
         ).returning(SplVersion)
         row = await self._session.scalar(upsert, execution_options={"populate_existing": True})
