@@ -48,9 +48,3 @@ services:
         value: "0.2"
       - key: LLM_RPS_openrouter
         value: "0.2"
-      - key: SITE_AUTH_ENABLED
-        value: "true"
-      - key: SITE_AUTH_USERNAME
-        sync: false
-      - key: SITE_AUTH_PASSWORD
-        sync: false

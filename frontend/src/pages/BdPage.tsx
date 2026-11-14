@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 
 import { API_BASE_URL } from '@/api/client'
-import { authHeader } from '@/lib/auth'
 import { useDocumentTitle } from '@/lib/format'
 
 type Brand = {
@@ -22,9 +21,7 @@ export function BdPage() {
 
   async function search() {
     setNote('')
-    const res = await fetch(`${API_BASE_URL}/api/v1/bd/brands?q=${encodeURIComponent(q)}`, {
-      headers: authHeader(),
-    })
+    const res = await fetch(`${API_BASE_URL}/api/v1/bd/brands?q=${encodeURIComponent(q)}`)
     if (!res.ok) {
       setNote('Search failed. Import brands with scripts/import_bd_brands.py --fixture first.')
       return

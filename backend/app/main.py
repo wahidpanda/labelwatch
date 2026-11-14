@@ -17,7 +17,6 @@ from app.middleware import (
     RequestContextMiddleware,
     SecurityHeadersMiddleware,
 )
-from app.middleware_basic_auth import BasicAuthMiddleware
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -43,10 +42,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.state.settings = settings
 
-    # Basic auth is added first so CORS (added later) wraps 401/preflight responses.
-    app.add_middleware(BasicAuthMiddleware, settings=settings)
-    app.add_middleware(RequestContextMiddleware)
-    app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(RateLimitMiddleware, per_minute=settings.rate_limit_per_minute)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -55,7 +51,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["Authorization", "Content-Type", REQUEST_ID_HEADER],
         expose_headers=[REQUEST_ID_HEADER],
     )
-    app.add_middleware(RateLimitMiddleware, per_minute=settings.rate_limit_per_minute)
+    app.add_middleware(SecurityHeadersMiddleware)
+    app.add_middleware(RequestContextMiddleware)
     register_error_handlers(app)
 
     # Probes also live at the root so hosts can health-check without the API prefix.

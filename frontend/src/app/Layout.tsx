@@ -1,8 +1,7 @@
-import { Activity, BookOpen, Flag, LayoutDashboard, LogOut, Pill, Sparkles } from 'lucide-react'
+import { Activity, BookOpen, Flag, LayoutDashboard, Pill, Sparkles } from 'lucide-react'
 import { NavLink, Outlet } from 'react-router'
 
 import { ChatDock } from '@/components/ChatDock'
-import { authRequired, clearAuth } from '@/lib/auth'
 
 const nav = [
   { to: '/', end: true, label: 'Dashboard', icon: LayoutDashboard },
@@ -47,19 +46,6 @@ export function Layout() {
               ))}
             </ul>
           </nav>
-          {authRequired && (
-            <button
-              type="button"
-              className="flex items-center gap-1 rounded-full border px-3 py-1.5 text-xs text-muted-foreground hover:bg-muted sm:text-sm"
-              onClick={() => {
-                clearAuth()
-                window.location.href = '/'
-              }}
-            >
-              <LogOut className="size-3.5" aria-hidden />
-              Sign out
-            </button>
-          )}
         </div>
       </header>
 

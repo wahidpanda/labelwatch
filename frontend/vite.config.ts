@@ -15,10 +15,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
     include: ['tests/**/*.test.{ts,tsx}'],
-    env: {
-      VITE_API_BASE_URL: 'http://localhost:8000',
-      VITE_SITE_AUTH_REQUIRED: 'false',
-    },
+    env: { VITE_API_BASE_URL: 'http://localhost:8000' },
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
@@ -29,7 +26,6 @@ export default defineConfig({
         'src/pages/BdPage.tsx',
         'src/components/ChatDock.tsx',
         'src/pages/LlmOpsPage.tsx',
-        'src/components/AuthGate.tsx',
       ],
       thresholds: { lines: 70, functions: 70, branches: 70, statements: 70 },
     },

@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import type { ReactNode } from 'react'
 
 import { API_BASE_URL } from '@/api/client'
-import { authHeader } from '@/lib/auth'
 import { formatDate, useDocumentTitle } from '@/lib/format'
 
 type LlmOps = {
@@ -25,7 +24,7 @@ type LlmOps = {
 }
 
 async function fetchOps(): Promise<LlmOps> {
-  const res = await fetch(`${API_BASE_URL}/api/v1/ops/llm`, { headers: authHeader() })
+  const res = await fetch(`${API_BASE_URL}/api/v1/ops/llm`)
   if (!res.ok) throw new Error('Could not load LLM ops')
   return (await res.json()) as LlmOps
 }
@@ -42,7 +41,7 @@ export function LlmOpsPage() {
           Daily provider usage, response cache, and LangSmith trace budget. Not medical advice.
         </p>
       </header>
-      {ops.isError && <p className="text-sm text-destructive">Could not load ops. Check sign-in.</p>}
+      {ops.isError && <p className="text-sm text-destructive">Could not load ops.</p>}
       {ops.data && (
         <FadeIn className="grid gap-4 md:grid-cols-3">
           <StatCard label="Cache entries" value={String(ops.data.cache_entries)} />

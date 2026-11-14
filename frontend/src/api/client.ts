@@ -1,7 +1,6 @@
 import createClient from 'openapi-fetch'
 
 import type { components, paths } from '@/api/schema'
-import { authHeader } from '@/lib/auth'
 
 export type Schemas = components['schemas']
 export type DrugSummary = Schemas['DrugSummary']
@@ -17,17 +16,9 @@ export type Status = JudgementOut['status']
 export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? ''
 
 // Resolve fetch per call so tests can stub it after this module loads.
-function authFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-  const headers = new Headers(init?.headers)
-  for (const [key, value] of Object.entries(authHeader())) {
-    headers.set(key, value)
-  }
-  return globalThis.fetch(input, { ...init, headers })
-}
-
 export const api = createClient<paths>({
   baseUrl: API_BASE_URL,
-  fetch: authFetch,
+  fetch: (request) => globalThis.fetch(request),
 })
 
 export class ApiError extends Error {

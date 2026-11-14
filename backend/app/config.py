@@ -90,9 +90,6 @@ class Settings(BaseSettings):
     chat_timeout_s: int = 25
     chat_rate_limit_per_min: int = 10
 
-    site_auth_enabled: bool = False
-    site_auth_username: str = ""
-    site_auth_password: SecretStr | None = None
     langsmith_endpoint: str = "https://api.smith.langchain.com"
 
     @field_validator("admin_emails", "cors_origins", "llm_provider_order", mode="before")

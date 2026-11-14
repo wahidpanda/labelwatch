@@ -1,7 +1,6 @@
 import { useCallback, useState } from 'react'
 
 import { API_BASE_URL } from '@/api/client'
-import { authHeader } from '@/lib/auth'
 
 export function useChat() {
   const [question, setQuestion] = useState('')
@@ -17,13 +16,9 @@ export function useChat() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/chat/stream`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeader() },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question, locale: 'en' }),
       })
-      if (res.status === 401) {
-        setAnswer('Sign in again to use the assistant.')
-        return
-      }
       const text = await res.text()
       const tokens = [...text.matchAll(/"text"\s*:\s*"([^"]*)"/g)]
         .map((m) => m[1])

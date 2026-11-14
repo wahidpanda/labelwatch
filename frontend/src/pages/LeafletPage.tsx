@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router";
 
 import { API_BASE_URL } from "@/api/client";
-import { authHeader } from "@/lib/auth";
 import { useDrugs } from "@/api/queries";
 import { StatusBadge } from "@/components/StatusBadge";
 import { formatDate, useDocumentTitle } from "@/lib/format";
@@ -28,11 +27,7 @@ type Check = {
 };
 
 async function call<T>(path: string, init: RequestInit): Promise<T> {
-  const headers = new Headers(init.headers);
-  for (const [key, value] of Object.entries(authHeader())) {
-    headers.set(key, value);
-  }
-  const res = await fetch(`${API_BASE_URL}${path}`, { ...init, headers });
+  const res = await fetch(`${API_BASE_URL}${path}`, init);
   const body = (await res.json()) as T & { detail?: string };
   if (!res.ok) throw new Error(body.detail ?? res.statusText);
   return body;
