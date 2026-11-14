@@ -91,7 +91,7 @@ stops with status `partial` and resumes from the cache on the next run.
 
 ```mermaid
 flowchart LR
-  U[Browser] --> CF[Cloudflare Pages<br/>React app]
+  U[Browser] --> CF[Cloudflare Workers<br/>React app]
   CF -->|/api/v1| R[Render<br/>FastAPI container]
   R --> S[(Supabase Postgres)]
   GH[GitHub Actions<br/>nightly.yml] -->|ingest, detect, judge| S
@@ -151,7 +151,9 @@ Tests: `uv run pytest` (integration tests need `TEST_DATABASE_URL`) and `npm tes
    `LLM_DAILY_CAP_<provider>`.
 3. **Render.** New Blueprint from this repo ([render.yaml](render.yaml)). Fill the secret env vars,
    including `CORS_ORIGINS` with the Pages URL.
-4. **Cloudflare Pages.** Root `frontend`, build `npm run build`, output `dist`, env
+4. **Cloudflare Workers.** Import the repo with root directory `frontend`, build command
+   `npm run build`, deploy command `npx wrangler deploy` (reads
+   [frontend/wrangler.jsonc](frontend/wrangler.jsonc)), and the build variable
    `VITE_API_BASE_URL` set to the Render URL.
 5. **GitHub Actions.** Add secrets `DATABASE_URL`, `DATABASE_URL_MIGRATIONS`, `CONTACT_EMAIL` and
    the provider keys, and variables for the model names (for example
