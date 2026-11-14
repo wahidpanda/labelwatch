@@ -211,14 +211,29 @@ class IngestPipeline:
                 if stored.role == "brand":
                     brand_sets.append(stored)
 
-        # Without an active brand label, repackaged copies of it are the only brand history.
-        if mode is not IngestMode.METADATA and not any(not s.is_repackager for s in brand_sets):
-            for stored in brand_sets:
+        if mode is not IngestMode.METADATA:
+            await self._download_brand_history(brand_sets, stats)
+
+    async def _download_brand_history(
+        self, brand_sets: list[StoredSet], stats: IngestStats
+    ) -> None:
+        """Repackaged brand copies stand in for brand history the active brand set lacks."""
+        active_dates = [
+            published
+            for s in brand_sets
+            if not s.is_repackager
+            for _vid, published in s.versions.values()
+        ]
+        start = min(active_dates, default=date.max)
+        for stored in brand_sets:
+            if not stored.is_repackager:
+                continue
+            if any(published < start for _vid, published in stored.versions.values()):
                 stats.brand_proxy = True
-                try:
-                    await self._download(stored, lambda _published: True, stats)
-                except (UpstreamError, DailyMedFormatError) as exc:
-                    stats.errors.append(f"set {stored.setid}: {exc}")
+            try:
+                await self._download(stored, lambda published: published < start, stats)
+            except (UpstreamError, DailyMedFormatError) as exc:
+                stats.errors.append(f"set {stored.setid}: {exc}")
 
     async def _ingest_set(
         self,

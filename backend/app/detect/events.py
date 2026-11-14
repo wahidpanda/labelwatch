@@ -5,6 +5,7 @@ import itertools
 import re
 import uuid
 from dataclasses import dataclass, field
+from datetime import date
 from typing import Any
 
 from sqlalchemy import select
@@ -109,14 +110,24 @@ class EventDetector:
             log.info("detect_events_done", ingredient=norm, status=status, **stats.as_json())
         return stats
 
-    async def _brand_sets(self, session: AsyncSession, drug_id: uuid.UUID) -> list[SplSet]:
-        sets = list(
-            await session.scalars(
-                select(SplSet).where(SplSet.drug_id == drug_id, SplSet.role == "brand")
-            )
+    async def _brand_timeline(
+        self, session: AsyncSession, drug_id: uuid.UUID, stats: DetectStats
+    ) -> list[tuple[SplSet, SplVersion]]:
+        """Active brand versions, preceded by repackaged brand copies published before them."""
+        sets = await session.scalars(
+            select(SplSet).where(SplSet.drug_id == drug_id, SplSet.role == "brand")
         )
-        active = [s for s in sets if not s.is_repackager]
-        return active or sets
+        labels = LabelRepository(session)
+        active: list[tuple[SplSet, SplVersion]] = []
+        copies: list[tuple[SplSet, SplVersion]] = []
+        for spl_set in sets:
+            versions = await labels.parsed_versions(spl_set.id)
+            if versions:
+                stats.brand_sets += 1
+            (copies if spl_set.is_repackager else active).extend((spl_set, v) for v in versions)
+        start = min((v.published_date for _s, v in active), default=date.max)
+        earlier = [(s, v) for s, v in copies if v.published_date < start]
+        return sorted(earlier + active, key=lambda sv: (sv[1].published_date, sv[1].version))
 
     async def _detect(self, norm: str, stats: DetectStats) -> None:
         async with self._sessions() as session:
@@ -124,28 +135,28 @@ class EventDetector:
             if drug is None:
                 raise LookupError(f"Drug {norm!r} has not been ingested")
             drug_id = drug.id
-            pairs: list[_Pair] = []
-            for spl_set in await self._brand_sets(session, drug_id):
-                versions = await LabelRepository(session).parsed_versions(spl_set.id)
-                stats.brand_sets += 1
-                pairs.extend(_Pair(spl_set, a, b) for a, b in itertools.pairwise(versions))
-        for pair in pairs:
+            timeline = await self._brand_timeline(session, drug_id, stats)
+            known = await EventRepository(session).claim_hashes_for_drug(drug_id)
+        for (_old_set, old), (new_set, new) in itertools.pairwise(timeline):
             stats.pairs += 1
-            await self._detect_pair(drug_id, pair, stats)
+            await self._detect_pair(drug_id, _Pair(new_set, old, new), known, stats)
 
-    async def _detect_pair(self, drug_id: uuid.UUID, pair: _Pair, stats: DetectStats) -> None:
+    async def _detect_pair(
+        self, drug_id: uuid.UUID, pair: _Pair, known: set[str], stats: DetectStats
+    ) -> None:
         async with self._sessions() as session:
             labels = LabelRepository(session)
             old = await labels.sections_for_version(pair.old.id)
             new = await labels.sections_for_version(pair.new.id)
-            known = await EventRepository(session).claim_hashes(pair.spl_set.id)
-        old_everywhere = {hash_form(u) for _h, body in old.values() for u in split_units(body)}
+        all_old_units = [u for _h, body in old.values() for u in split_units(body)]
+        old_everywhere = {hash_form(u) for u in all_old_units}
         for key, (digest, body) in sorted(new.items()):
             before = old.get(key)
             if before is not None and before[0] == digest:
                 continue
             stats.sections_changed += 1
-            old_units = split_units(before[1]) if before else []
+            # Old-format labels split sections differently (warnings and precautions vs PLR).
+            old_units = split_units(before[1]) if before else all_old_units
             for change in diff_units(old_units, split_units(body)):
                 if change.kind == "removed" or change.new is None:
                     continue

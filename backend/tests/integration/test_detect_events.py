@@ -61,24 +61,35 @@ async def factory(engine: AsyncEngine) -> AsyncIterator[async_sessionmaker[Async
         )
 
 
-async def _seed(factory: async_sessionmaker[AsyncSession], versions: list[list[str]]) -> None:
+async def _seed(
+    factory: async_sessionmaker[AsyncSession],
+    versions: list[list[str]],
+    *,
+    repackaged: bool = False,
+    first_year: int = 2016,
+    section_key: str = "warnings_precautions",
+) -> None:
     async with factory() as session:
         drug = await DrugRepository(session).upsert("montelukast", "montelukast", is_seed=True)
         labels = LabelRepository(session)
         spl_set = await labels.upsert_set(
-            setid=uuid.uuid4(), drug_id=drug.id, title="SINGULAIR [ORGANON LLC]", role="brand"
+            setid=uuid.uuid4(),
+            drug_id=drug.id,
+            title="SINGULAIR [REPACKER]" if repackaged else "SINGULAIR [ORGANON LLC]",
+            role="brand",
+            is_repackager=repackaged,
         )
         for number, units in enumerate(versions, start=1):
             row = await labels.upsert_version(
                 spl_set_id=spl_set.id,
                 version=number,
-                published_date=date(2015 + number, 1, 1),
+                published_date=date(first_year + number - 1, 1, 1),
                 source_url="https://dailymed.nlm.nih.gov/x",
                 raw_sha256=f"{number:064d}",
             )
             digest = await labels.store_section_text(join_units(units))
             await labels.attach_section(
-                version_id=row.id, section_key="warnings_precautions", text_hash=digest, loinc=None
+                version_id=row.id, section_key=section_key, text_hash=digest, loinc=None
             )
         await session.commit()
 
@@ -158,3 +169,21 @@ async def test_call_cap_defers_and_marks_run_partial(
 async def test_unknown_drug_fails_the_run(factory: async_sessionmaker[AsyncSession]) -> None:
     with pytest.raises(LookupError):
         await EventDetector(factory, _llm(factory, KeywordModel())).detect_drug("nothing")
+
+
+async def test_earlier_repackaged_copy_extends_brand_history(
+    factory: async_sessionmaker[AsyncSession],
+) -> None:
+    # Old-format copy (separate "warnings" section) predates the active PLR brand set.
+    await _seed(factory, [BASE], repackaged=True, first_year=2010, section_key="warnings")
+    await _seed(factory, [[*BASE, NEW_WARNING]], first_year=2021)
+    # A later repackaged copy must not be treated as brand history.
+    await _seed(factory, [[*BASE, NEW_WARNING, EDITORIAL]], repackaged=True, first_year=2024)
+    model = KeywordModel()
+    stats = await EventDetector(factory, _llm(factory, model)).detect_drug("montelukast")
+    assert stats.pairs == 1
+    assert stats.events_created == 1
+    async with factory() as session:
+        event = await session.scalar(select(SafetyEvent))
+    assert event is not None
+    assert event.event_date == date(2021, 1, 1)

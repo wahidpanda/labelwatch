@@ -13,9 +13,9 @@ class EventRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def claim_hashes(self, brand_set_id: uuid.UUID) -> set[str]:
+    async def claim_hashes_for_drug(self, drug_id: uuid.UUID) -> set[str]:
         result = await self._session.scalars(
-            select(SafetyEvent.claim_hash).where(SafetyEvent.brand_set_id == brand_set_id)
+            select(SafetyEvent.claim_hash).where(SafetyEvent.drug_id == drug_id)
         )
         return set(result)
 
