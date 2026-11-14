@@ -1,7 +1,7 @@
 """Ingestion for one drug: Orange Book applications -> DailyMed sets -> versions -> sections."""
 
 import uuid
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from datetime import date
 from enum import StrEnum
@@ -63,10 +63,12 @@ class IngestStats:
     downloaded: int = 0
     sections_attached: int = 0
     skipped_existing: int = 0
+    brand_proxy: bool = False
     errors: list[str] = field(default_factory=list)
 
     def as_json(self) -> dict[str, Any]:
         return {
+            "brand_proxy": self.brand_proxy,
             "applications": self.applications,
             "sets": self.sets,
             "versions": self.versions,
@@ -76,6 +78,16 @@ class IngestStats:
             "errors": self.errors[:50],
             "error_count": len(self.errors),
         }
+
+
+@dataclass
+class StoredSet:
+    setid: uuid.UUID
+    spl_set_id: uuid.UUID
+    role: str
+    is_repackager: bool
+    versions: dict[int, tuple[uuid.UUID, date]]
+    done: set[uuid.UUID]
 
 
 def needs_sections(role: str, is_repackager: bool, published: date, mode: IngestMode) -> bool:
@@ -176,6 +188,7 @@ class IngestPipeline:
         stats.applications = len(groups)
 
         seen: set[uuid.UUID] = set()
+        brand_sets: list[StoredSet] = []
         for group in _ordered(groups):
             try:
                 summaries = await self._source.list_sets(
@@ -189,11 +202,23 @@ class IngestPipeline:
                     continue
                 seen.add(summary.setid)
                 try:
-                    await self._ingest_set(
+                    stored = await self._ingest_set(
                         drug_id, app_ids[group.application_number], group, summary, mode, stats
                     )
                 except (UpstreamError, DailyMedFormatError) as exc:
                     stats.errors.append(f"set {summary.setid}: {exc}")
+                    continue
+                if stored.role == "brand":
+                    brand_sets.append(stored)
+
+        # Without an active brand label, repackaged copies of it are the only brand history.
+        if mode is not IngestMode.METADATA and not any(not s.is_repackager for s in brand_sets):
+            for stored in brand_sets:
+                stats.brand_proxy = True
+                try:
+                    await self._download(stored, lambda _published: True, stats)
+                except (UpstreamError, DailyMedFormatError) as exc:
+                    stats.errors.append(f"set {stored.setid}: {exc}")
 
     async def _ingest_set(
         self,
@@ -203,7 +228,7 @@ class IngestPipeline:
         summary: SetSummary,
         mode: IngestMode,
         stats: IngestStats,
-    ) -> None:
+    ) -> "StoredSet":
         role = assign_role(group, summary.title)
         repackager = is_likely_repackager(summary.labeler, group)
         history = await self._source.history(summary.setid)
@@ -239,16 +264,25 @@ class IngestPipeline:
             spl_set_id = spl_set.id
         stats.sets += 1
         stats.versions += len(versions)
+        stored = StoredSet(summary.setid, spl_set_id, role, repackager, versions, done)
+        await self._download(
+            stored, lambda published: needs_sections(role, repackager, published, mode), stats
+        )
+        return stored
 
-        for number, (version_id, published) in sorted(versions.items()):
-            if not needs_sections(role, repackager, published, mode):
+    async def _download(
+        self, stored: "StoredSet", wanted: Callable[[date], bool], stats: IngestStats
+    ) -> None:
+        for number, (version_id, published) in sorted(stored.versions.items()):
+            if not wanted(published):
                 continue
-            if version_id in done:
+            if version_id in stored.done:
                 stats.skipped_existing += 1
                 continue
             await self._store_version(
-                summary.setid, spl_set_id, number, version_id, published, stats
+                stored.setid, stored.spl_set_id, number, version_id, published, stats
             )
+            stored.done.add(version_id)
 
     async def _store_version(
         self,

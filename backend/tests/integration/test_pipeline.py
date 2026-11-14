@@ -26,23 +26,20 @@ class FakeDailyMed:
         self.generic_labeler = generic_labeler
         self.fetches: list[tuple[uuid.UUID, int]] = []
         self.fail_version: tuple[uuid.UUID, int] | None = None
+        self.brand_active = True
 
     async def list_sets(
         self, *, application_number: str | None = None, drug_name: str | None = None
     ) -> list[SetSummary]:
         if application_number == "NDA020829":
-            return [
-                SetSummary(
-                    BRAND,
-                    "SINGULAIR (MONTELUKAST SODIUM) TABLET [ORGANON LLC]",
-                    2,
-                    date(2025, 6, 25),
-                ),
-                SetSummary(
-                    REPACK, "SINGULAIR TABLET [PD-RX PHARMACEUTICALS, INC.]", 1, date(2024, 1, 1)
-                ),
-            ]
-        if application_number == "NDA020830":
+            brand = SetSummary(
+                BRAND, "SINGULAIR (MONTELUKAST SODIUM) TABLET [ORGANON LLC]", 2, date(2025, 6, 25)
+            )
+            repack = SetSummary(
+                REPACK, "SINGULAIR TABLET [PD-RX PHARMACEUTICALS, INC.]", 1, date(2024, 1, 1)
+            )
+            return [brand, repack] if self.brand_active else [repack]
+        if application_number == "NDA020830" and self.brand_active:
             # The brand set is listed again under its second NDA; it must not be duplicated.
             return [SetSummary(BRAND, "SINGULAIR [ORGANON LLC]", 2, date(2025, 6, 25))]
         if application_number == self.generic_anda:
@@ -194,3 +191,19 @@ async def test_metadata_mode_downloads_nothing_and_size_guard_blocks(
             await session.scalars(select(IngestionRun.status).order_by(IngestionRun.started_at))
         ).all()
     assert statuses[-1] == "failed"
+
+
+async def test_repackaged_brand_copies_stand_in_when_brand_is_inactive(
+    factory: async_sessionmaker[AsyncSession],
+) -> None:
+    products = _montelukast_products()
+    generic = next(p for p in products if p.appl_type == "ANDA")
+    source = FakeDailyMed(
+        generic.application_number, generic.applicant_full_name or generic.applicant
+    )
+    source.brand_active = False
+    stats = await IngestPipeline(factory, source, db_size_limit_mb=100_000).ingest_drug(
+        "montelukast", products, IngestMode.VERSIONS
+    )
+    assert stats.brand_proxy is True
+    assert (REPACK, 1) in source.fetches
