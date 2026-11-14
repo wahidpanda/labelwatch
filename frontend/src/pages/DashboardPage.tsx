@@ -1,7 +1,6 @@
 import { Link, useSearchParams } from 'react-router'
 
 import { useDrugs, useOverview } from '@/api/queries'
-import { ChatPanel } from '@/components/ChatPanel'
 import { QueryState } from '@/components/QueryState'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDate, formatDays, formatPercent, title, useDocumentTitle } from '@/lib/format'
@@ -34,14 +33,17 @@ export function DashboardPage() {
 
   return (
     <section aria-labelledby="dashboard-title" className="space-y-10">
-      <ChatPanel />
-      <header className="space-y-2">
+      <header className="relative overflow-hidden rounded-2xl border bg-card/80 p-6 shadow-sm backdrop-blur sm:p-8">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-8 -top-8 size-40 rounded-full bg-primary/10 blur-2xl"
+        />
         <h1 id="dashboard-title" className="text-3xl font-semibold">
-          Dashboard
+          Label lag overview
         </h1>
-        <p className="max-w-prose text-muted-foreground">
+        <p className="mt-2 max-w-prose text-muted-foreground">
           How long generic labels take to reflect brand safety changes, measured from published
-          DailyMed label versions.
+          DailyMed label versions. Use the assistant button for quick questions.
         </p>
       </header>
 

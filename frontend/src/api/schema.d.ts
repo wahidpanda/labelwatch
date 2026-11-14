@@ -413,6 +413,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/ops/llm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Llm Ops */
+        get: operations["get_llm_ops_api_v1_ops_llm_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/readyz": {
         parameters: {
             query?: never;
@@ -902,6 +919,42 @@ export interface components {
              */
             verified: boolean;
         };
+        /** LlmOpsOverview */
+        LlmOpsOverview: {
+            /**
+             * As Of
+             * Format: date-time
+             */
+            as_of: string;
+            /** Cache By Task */
+            cache_by_task: {
+                [key: string]: number;
+            };
+            /** Cache Entries */
+            cache_entries: number;
+            /** Langsmith Project */
+            langsmith_project: string;
+            /** Langsmith Tracing */
+            langsmith_tracing: boolean;
+            /** Langsmith Url */
+            langsmith_url: string | null;
+            /** Last Ingestion At */
+            last_ingestion_at: string | null;
+            /**
+             * Today
+             * Format: date
+             */
+            today: string;
+            /**
+             * Trace Month
+             * Format: date
+             */
+            trace_month: string;
+            /** Traces This Month */
+            traces_this_month: number;
+            /** Usage Today */
+            usage_today: components["schemas"]["ProviderUsage"][];
+        };
         /** MatrixCell */
         MatrixCell: {
             /**
@@ -1037,6 +1090,19 @@ export interface components {
             items: components["schemas"]["StaleGeneric"][];
             /** Next Cursor */
             next_cursor?: string | null;
+        };
+        /** ProviderUsage */
+        ProviderUsage: {
+            /** Calls */
+            calls: number;
+            /** Model */
+            model: string;
+            /** Provider */
+            provider: string;
+            /** Tokens In */
+            tokens_in: number;
+            /** Tokens Out */
+            tokens_out: number;
         };
         /** ReadinessOut */
         ReadinessOut: {
@@ -1932,6 +1998,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Methodology"];
+                };
+            };
+        };
+    };
+    get_llm_ops_api_v1_ops_llm_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LlmOpsOverview"];
                 };
             };
         };

@@ -156,7 +156,7 @@ function renderAt(path: string) {
 describe('app', () => {
   it('dashboard shows live KPIs and the drug table', async () => {
     renderAt('/')
-    expect(screen.getByRole('heading', { level: 1, name: 'Dashboard' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: 'Label lag overview' })).toBeInTheDocument()
     expect(await screen.findByLabelText('Median lag: 182 days')).toBeInTheDocument()
     expect(screen.getByLabelText('Not yet reflected: 10%')).toBeInTheDocument()
     expect(await screen.findByRole('link', { name: 'Montelukast' })).toHaveAttribute(

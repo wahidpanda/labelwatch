@@ -1110,6 +1110,93 @@
         "title": "LeafletSummary",
         "type": "object"
       },
+      "LlmOpsOverview": {
+        "properties": {
+          "as_of": {
+            "format": "date-time",
+            "title": "As Of",
+            "type": "string"
+          },
+          "cache_by_task": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "title": "Cache By Task",
+            "type": "object"
+          },
+          "cache_entries": {
+            "title": "Cache Entries",
+            "type": "integer"
+          },
+          "langsmith_project": {
+            "title": "Langsmith Project",
+            "type": "string"
+          },
+          "langsmith_tracing": {
+            "title": "Langsmith Tracing",
+            "type": "boolean"
+          },
+          "langsmith_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Langsmith Url"
+          },
+          "last_ingestion_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Ingestion At"
+          },
+          "today": {
+            "format": "date",
+            "title": "Today",
+            "type": "string"
+          },
+          "trace_month": {
+            "format": "date",
+            "title": "Trace Month",
+            "type": "string"
+          },
+          "traces_this_month": {
+            "title": "Traces This Month",
+            "type": "integer"
+          },
+          "usage_today": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderUsage"
+            },
+            "title": "Usage Today",
+            "type": "array"
+          }
+        },
+        "required": [
+          "as_of",
+          "today",
+          "trace_month",
+          "traces_this_month",
+          "langsmith_tracing",
+          "langsmith_project",
+          "langsmith_url",
+          "cache_entries",
+          "cache_by_task",
+          "usage_today",
+          "last_ingestion_at"
+        ],
+        "title": "LlmOpsOverview",
+        "type": "object"
+      },
       "MatrixCell": {
         "properties": {
           "judgement_id": {
@@ -1505,6 +1592,39 @@
           "items"
         ],
         "title": "Page[StaleGeneric]",
+        "type": "object"
+      },
+      "ProviderUsage": {
+        "properties": {
+          "calls": {
+            "title": "Calls",
+            "type": "integer"
+          },
+          "model": {
+            "title": "Model",
+            "type": "string"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "tokens_in": {
+            "title": "Tokens In",
+            "type": "integer"
+          },
+          "tokens_out": {
+            "title": "Tokens Out",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "provider",
+          "model",
+          "calls",
+          "tokens_in",
+          "tokens_out"
+        ],
+        "title": "ProviderUsage",
         "type": "object"
       },
       "ReadinessOut": {
@@ -3039,6 +3159,27 @@
         "summary": "Get Methodology",
         "tags": [
           "catalog"
+        ]
+      }
+    },
+    "/api/v1/ops/llm": {
+      "get": {
+        "operationId": "get_llm_ops_api_v1_ops_llm_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LlmOpsOverview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Llm Ops",
+        "tags": [
+          "ops"
         ]
       }
     },
