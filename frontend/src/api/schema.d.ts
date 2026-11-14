@@ -4,6 +4,125 @@
  */
 
 export interface paths {
+    "/api/v1/alerts/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Confirm */
+        get: operations["confirm_api_v1_alerts_confirm_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/subscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Subscribe */
+        post: operations["subscribe_api_v1_alerts_subscribe_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/alerts/unsubscribe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Unsubscribe */
+        post: operations["unsubscribe_api_v1_alerts_unsubscribe_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bd/brands": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search Brands */
+        get: operations["search_brands_api_v1_bd_brands_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bd/brands/{brand_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Brand */
+        get: operations["get_brand_api_v1_bd_brands__brand_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chat/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Chat Feedback */
+        post: operations["chat_feedback_api_v1_chat_feedback_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/chat/stream": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Chat Stream */
+        post: operations["chat_stream_api_v1_chat_stream_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/drugs": {
         parameters: {
             query?: never;
@@ -64,6 +183,40 @@ export interface paths {
         };
         /** Get Drug Matrix */
         get: operations["get_drug_matrix_api_v1_drugs__drug_id__matrix_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/eval/runs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Runs */
+        get: operations["list_runs_api_v1_eval_runs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/eval/runs/{run_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Run */
+        get: operations["get_run_api_v1_eval_runs__run_id__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -315,10 +468,73 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** BdBrandDetail */
+        BdBrandDetail: {
+            /** Brand Name */
+            brand_name: string;
+            /** Dosage Form */
+            dosage_form: string | null;
+            /** Drug Id */
+            drug_id: string | null;
+            /** Generic Name */
+            generic_name: string;
+            /** Generic Norm */
+            generic_norm: string;
+            /** Has Us Label Data */
+            has_us_label_data: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Manufacturer */
+            manufacturer: string | null;
+            /**
+             * Reference Notice
+             * @default Reference: US FDA labeling on DailyMed, not DGDA labeling. Not medical advice.
+             */
+            reference_notice: string;
+            /** Strength */
+            strength: string | null;
+        };
+        /** BdBrandSummary */
+        BdBrandSummary: {
+            /** Brand Name */
+            brand_name: string;
+            /** Dosage Form */
+            dosage_form: string | null;
+            /** Drug Id */
+            drug_id: string | null;
+            /** Generic Name */
+            generic_name: string;
+            /** Generic Norm */
+            generic_norm: string;
+            /** Has Us Label Data */
+            has_us_label_data: boolean;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Manufacturer */
+            manufacturer: string | null;
+            /** Strength */
+            strength: string | null;
+        };
         /** Body_extract_leaflet_api_v1_leaflets_extract_post */
         Body_extract_leaflet_api_v1_leaflets_extract_post: {
             /** File */
             file: string;
+        };
+        /** ChatIn */
+        ChatIn: {
+            /**
+             * Locale
+             * @default en
+             */
+            locale: string;
+            /** Question */
+            question: string;
         };
         /** Consistency */
         Consistency: {
@@ -456,6 +672,17 @@ export interface components {
             text: string;
             /** Unclear Parts */
             unclear_parts: string[];
+        };
+        /** FeedbackIn */
+        FeedbackIn: {
+            /** Comment */
+            comment?: string | null;
+            /** Message Id */
+            message_id: string;
+            /** Rating */
+            rating: number;
+            /** Session Id */
+            session_id: string;
         };
         /** FirstVersion */
         FirstVersion: {
@@ -870,6 +1097,43 @@ export interface components {
              */
             propagated: number;
         };
+        /** SubscribeIn */
+        SubscribeIn: {
+            /** Consent */
+            consent: boolean;
+            /** Drug Ids */
+            drug_ids?: string[];
+            /** Email */
+            email: string;
+            /**
+             * Frequency
+             * @default weekly
+             */
+            frequency: string;
+            /**
+             * Locale
+             * @default en
+             */
+            locale: string;
+            /**
+             * Min Severity
+             * @default major
+             */
+            min_severity: string;
+            /**
+             * Website
+             * @default
+             */
+            website: string;
+        };
+        /** SubscribeOut */
+        SubscribeOut: {
+            /**
+             * Message
+             * @default If this address can receive mail, you will get a confirmation message shortly.
+             */
+            message: string;
+        };
         /** ValidationError */
         ValidationError: {
             /** Context */
@@ -892,6 +1156,231 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    confirm_api_v1_alerts_confirm_get: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    subscribe_api_v1_alerts_subscribe_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubscribeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscribeOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    unsubscribe_api_v1_alerts_unsubscribe_post: {
+        parameters: {
+            query: {
+                token: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: string;
+                    };
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_brands_api_v1_bd_brands_get: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BdBrandSummary"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_brand_api_v1_bd_brands__brand_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                brand_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BdBrandDetail"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    chat_feedback_api_v1_chat_feedback_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FeedbackIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    chat_stream_api_v1_chat_stream_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChatIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     list_drugs_api_v1_drugs_get: {
         parameters: {
             query?: {
@@ -1010,6 +1499,61 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DrugMatrix"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_runs_api_v1_eval_runs_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    }[];
+                };
+            };
+        };
+    };
+    get_run_api_v1_eval_runs__run_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                run_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        [key: string]: unknown;
+                    };
                 };
             };
             /** @description Validation Error */

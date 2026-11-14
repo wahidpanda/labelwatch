@@ -4,6 +4,7 @@ import { Layout } from '@/app/Layout'
 import { DashboardPage } from '@/pages/DashboardPage'
 import { DrugPage } from '@/pages/DrugPage'
 import { EventPage } from '@/pages/EventPage'
+import { BdPage } from '@/pages/BdPage'
 import { LeafletPage } from '@/pages/LeafletPage'
 import { MethodologyPage } from '@/pages/MethodologyPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
@@ -20,6 +21,7 @@ export const routes: RouteObject[] = [
       { path: 'stale', element: <StalePage /> },
       { path: 'methodology', element: <MethodologyPage /> },
       { path: 'leaflet', element: <LeafletPage /> },
+      { path: 'bd', element: <BdPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

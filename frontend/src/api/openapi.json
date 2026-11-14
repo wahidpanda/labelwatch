@@ -1,6 +1,177 @@
 {
   "components": {
     "schemas": {
+      "BdBrandDetail": {
+        "properties": {
+          "brand_name": {
+            "title": "Brand Name",
+            "type": "string"
+          },
+          "dosage_form": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dosage Form"
+          },
+          "drug_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drug Id"
+          },
+          "generic_name": {
+            "title": "Generic Name",
+            "type": "string"
+          },
+          "generic_norm": {
+            "title": "Generic Norm",
+            "type": "string"
+          },
+          "has_us_label_data": {
+            "title": "Has Us Label Data",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "manufacturer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manufacturer"
+          },
+          "reference_notice": {
+            "default": "Reference: US FDA labeling on DailyMed, not DGDA labeling. Not medical advice.",
+            "title": "Reference Notice",
+            "type": "string"
+          },
+          "strength": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strength"
+          }
+        },
+        "required": [
+          "id",
+          "brand_name",
+          "generic_name",
+          "generic_norm",
+          "drug_id",
+          "strength",
+          "dosage_form",
+          "manufacturer",
+          "has_us_label_data"
+        ],
+        "title": "BdBrandDetail",
+        "type": "object"
+      },
+      "BdBrandSummary": {
+        "properties": {
+          "brand_name": {
+            "title": "Brand Name",
+            "type": "string"
+          },
+          "dosage_form": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dosage Form"
+          },
+          "drug_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Drug Id"
+          },
+          "generic_name": {
+            "title": "Generic Name",
+            "type": "string"
+          },
+          "generic_norm": {
+            "title": "Generic Norm",
+            "type": "string"
+          },
+          "has_us_label_data": {
+            "title": "Has Us Label Data",
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "manufacturer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manufacturer"
+          },
+          "strength": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Strength"
+          }
+        },
+        "required": [
+          "id",
+          "brand_name",
+          "generic_name",
+          "generic_norm",
+          "drug_id",
+          "strength",
+          "dosage_form",
+          "manufacturer",
+          "has_us_label_data"
+        ],
+        "title": "BdBrandSummary",
+        "type": "object"
+      },
       "Body_extract_leaflet_api_v1_leaflets_extract_post": {
         "properties": {
           "file": {
@@ -13,6 +184,27 @@
           "file"
         ],
         "title": "Body_extract_leaflet_api_v1_leaflets_extract_post",
+        "type": "object"
+      },
+      "ChatIn": {
+        "properties": {
+          "locale": {
+            "default": "en",
+            "pattern": "^(en|bn)$",
+            "title": "Locale",
+            "type": "string"
+          },
+          "question": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Question",
+            "type": "string"
+          }
+        },
+        "required": [
+          "question"
+        ],
+        "title": "ChatIn",
         "type": "object"
       },
       "Consistency": {
@@ -340,6 +532,42 @@
           "chars"
         ],
         "title": "ExtractOut",
+        "type": "object"
+      },
+      "FeedbackIn": {
+        "properties": {
+          "comment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comment"
+          },
+          "message_id": {
+            "title": "Message Id",
+            "type": "string"
+          },
+          "rating": {
+            "maximum": 1.0,
+            "minimum": -1.0,
+            "title": "Rating",
+            "type": "integer"
+          },
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "session_id",
+          "message_id",
+          "rating"
+        ],
+        "title": "FeedbackIn",
         "type": "object"
       },
       "FirstVersion": {
@@ -1393,6 +1621,69 @@
         "title": "StatusCounts",
         "type": "object"
       },
+      "SubscribeIn": {
+        "properties": {
+          "consent": {
+            "title": "Consent",
+            "type": "boolean"
+          },
+          "drug_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 25,
+            "title": "Drug Ids",
+            "type": "array"
+          },
+          "email": {
+            "maxLength": 120,
+            "minLength": 5,
+            "title": "Email",
+            "type": "string"
+          },
+          "frequency": {
+            "default": "weekly",
+            "pattern": "^(immediate|weekly)$",
+            "title": "Frequency",
+            "type": "string"
+          },
+          "locale": {
+            "default": "en",
+            "pattern": "^(en|bn)$",
+            "title": "Locale",
+            "type": "string"
+          },
+          "min_severity": {
+            "default": "major",
+            "pattern": "^(boxed|major|moderate|minor)$",
+            "title": "Min Severity",
+            "type": "string"
+          },
+          "website": {
+            "default": "",
+            "title": "Website",
+            "type": "string"
+          }
+        },
+        "required": [
+          "email",
+          "consent"
+        ],
+        "title": "SubscribeIn",
+        "type": "object"
+      },
+      "SubscribeOut": {
+        "properties": {
+          "message": {
+            "default": "If this address can receive mail, you will get a confirmation message shortly.",
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "title": "SubscribeOut",
+        "type": "object"
+      },
       "ValidationError": {
         "properties": {
           "ctx": {
@@ -1441,6 +1732,303 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/alerts/confirm": {
+      "get": {
+        "operationId": "confirm_api_v1_alerts_confirm_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "title": "Token",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Confirm Api V1 Alerts Confirm Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Confirm",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/v1/alerts/subscribe": {
+      "post": {
+        "operationId": "subscribe_api_v1_alerts_subscribe_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscribeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscribeOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Subscribe",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/v1/alerts/unsubscribe": {
+      "post": {
+        "operationId": "unsubscribe_api_v1_alerts_unsubscribe_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "required": true,
+            "schema": {
+              "title": "Token",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Unsubscribe Api V1 Alerts Unsubscribe Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Unsubscribe",
+        "tags": [
+          "alerts"
+        ]
+      }
+    },
+    "/api/v1/bd/brands": {
+      "get": {
+        "operationId": "search_brands_api_v1_bd_brands_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "schema": {
+              "maxLength": 80,
+              "minLength": 1,
+              "title": "Q",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BdBrandSummary"
+                  },
+                  "title": "Response Search Brands Api V1 Bd Brands Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Search Brands",
+        "tags": [
+          "bangladesh"
+        ]
+      }
+    },
+    "/api/v1/bd/brands/{brand_id}": {
+      "get": {
+        "operationId": "get_brand_api_v1_bd_brands__brand_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "brand_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Brand Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BdBrandDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Brand",
+        "tags": [
+          "bangladesh"
+        ]
+      }
+    },
+    "/api/v1/chat/feedback": {
+      "post": {
+        "operationId": "chat_feedback_api_v1_chat_feedback_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Chat Feedback",
+        "tags": [
+          "chat"
+        ]
+      }
+    },
+    "/api/v1/chat/stream": {
+      "post": {
+        "operationId": "chat_stream_api_v1_chat_stream_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Chat Stream",
+        "tags": [
+          "chat"
+        ]
+      }
+    },
     "/api/v1/drugs": {
       "get": {
         "operationId": "list_drugs_api_v1_drugs_get",
@@ -1724,6 +2312,77 @@
         "summary": "Get Drug Matrix",
         "tags": [
           "catalog"
+        ]
+      }
+    },
+    "/api/v1/eval/runs": {
+      "get": {
+        "operationId": "list_runs_api_v1_eval_runs_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "title": "Response List Runs Api V1 Eval Runs Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Runs",
+        "tags": [
+          "evaluation"
+        ]
+      }
+    },
+    "/api/v1/eval/runs/{run_id}": {
+      "get": {
+        "operationId": "get_run_api_v1_eval_runs__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Run Api V1 Eval Runs  Run Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Run",
+        "tags": [
+          "evaluation"
         ]
       }
     },

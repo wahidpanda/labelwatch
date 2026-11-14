@@ -38,7 +38,15 @@ SET_ROLES = ("brand", "generic", "authorized_generic", "other")
 CHANGE_TYPES = ("added", "strengthened", "modified")
 SEVERITIES = ("boxed", "major", "moderate", "minor")
 STATUSES = ("propagated", "partial", "not_propagated", "insufficient_evidence")
-JUDGE_METHODS = ("baseline_exact", "baseline_unchanged", "baseline_lexical", "llm", "human")
+JUDGE_METHODS = (
+    "baseline_exact",
+    "baseline_unchanged",
+    "baseline_lexical",
+    "llm",
+    "jev",
+    "cascade",
+    "human",
+)
 JOB_KINDS = ("fetch_set", "parse_version", "detect_events", "judge_pair", "refresh_views")
 JOB_STATUSES = ("queued", "running", "done", "failed", "deferred")
 
@@ -339,6 +347,147 @@ class LeafletCheck(Base):
     prompt_version: Mapped[str] = mapped_column(Text, nullable=False)
     provider: Mapped[str | None] = mapped_column(Text)
     model: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = _created_at()
+
+
+class Subscriber(Base):
+    __tablename__ = "subscribers"
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    email: Mapped[str] = mapped_column(Text, nullable=False)
+    email_norm: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    locale: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'en'"))
+    frequency: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'weekly'"))
+    min_severity: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'major'"))
+    status: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'pending'"))
+    consent_version: Mapped[str] = mapped_column(Text, nullable=False)
+    consented_at: Mapped[datetime] = _created_at()
+    confirmed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    unsubscribed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    last_digest_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = _created_at()
+
+
+class Watchlist(Base):
+    __tablename__ = "watchlists"
+
+    subscriber_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("subscribers.id", ondelete="CASCADE"), primary_key=True
+    )
+    drug_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("drugs.id", ondelete="CASCADE"), primary_key=True
+    )
+    created_at: Mapped[datetime] = _created_at()
+
+
+class NotificationEvent(Base):
+    __tablename__ = "notification_events"
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    kind: Mapped[str] = mapped_column(Text, nullable=False)
+    drug_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("drugs.id", ondelete="CASCADE"), nullable=False
+    )
+    event_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("safety_events.id", ondelete="CASCADE")
+    )
+    generic_set_id: Mapped[uuid.UUID | None] = mapped_column(
+        ForeignKey("spl_sets.id", ondelete="CASCADE")
+    )
+    dedupe_key: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    payload: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'")
+    )
+    created_at: Mapped[datetime] = _created_at()
+
+
+class EmailOutbox(Base):
+    __tablename__ = "email_outbox"
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    subscriber_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("subscribers.id", ondelete="CASCADE"), nullable=False
+    )
+    template: Mapped[str] = mapped_column(Text, nullable=False)
+    locale: Mapped[str] = mapped_column(Text, nullable=False)
+    subject: Mapped[str] = mapped_column(Text, nullable=False)
+    dedupe_key: Mapped[str] = mapped_column(Text, nullable=False, unique=True)
+    context: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'")
+    )
+    status: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'queued'"))
+    attempts: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
+    last_error: Mapped[str | None] = mapped_column(Text)
+    provider_message_id: Mapped[str | None] = mapped_column(Text)
+    scheduled_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+    sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = _created_at()
+
+
+class IngredientSynonym(Base):
+    __tablename__ = "ingredient_synonyms"
+
+    alias_norm: Mapped[str] = mapped_column(Text, primary_key=True)
+    ingredient_norm: Mapped[str] = mapped_column(Text, nullable=False)
+    source: Mapped[str | None] = mapped_column(Text)
+
+
+class BdBrand(Base):
+    __tablename__ = "bd_brands"
+    __table_args__ = (UniqueConstraint("brand_norm", "strength", "dosage_form", "manufacturer"),)
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    brand_name: Mapped[str] = mapped_column(Text, nullable=False)
+    brand_norm: Mapped[str] = mapped_column(Text, nullable=False)
+    generic_name: Mapped[str] = mapped_column(Text, nullable=False)
+    generic_norm: Mapped[str] = mapped_column(Text, nullable=False)
+    drug_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("drugs.id", ondelete="SET NULL"))
+    strength: Mapped[str | None] = mapped_column(Text)
+    dosage_form: Mapped[str | None] = mapped_column(Text)
+    manufacturer: Mapped[str | None] = mapped_column(Text)
+    source: Mapped[str] = mapped_column(Text, nullable=False)
+    source_license: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = _created_at()
+
+
+class RagDoc(Base):
+    __tablename__ = "rag_docs"
+    __table_args__ = (UniqueConstraint("kind", "ref_id", "lang"),)
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    kind: Mapped[str] = mapped_column(Text, nullable=False)
+    ref_id: Mapped[uuid.UUID | None] = mapped_column(UUID(as_uuid=True))
+    lang: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'en'"))
+    title: Mapped[str] = mapped_column(Text, nullable=False)
+    body: Mapped[str] = mapped_column(Text, nullable=False)
+    meta: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, server_default=text("'{}'"))
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+
+class ChatFeedback(Base):
+    __tablename__ = "chat_feedback"
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    session_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+    message_id: Mapped[str] = mapped_column(Text, nullable=False)
+    rating: Mapped[int] = mapped_column(Integer, nullable=False)
+    comment: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = _created_at()
+
+
+class EvalItemExtra(Base):
+    __tablename__ = "eval_items_extra"
+
+    id: Mapped[uuid.UUID] = _uuid_pk()
+    kind: Mapped[str] = mapped_column(Text, nullable=False)
+    lang: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'en'"))
+    question: Mapped[str] = mapped_column(Text, nullable=False)
+    expected: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    split: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'test'"))
     created_at: Mapped[datetime] = _created_at()
 
 

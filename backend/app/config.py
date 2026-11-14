@@ -61,6 +61,35 @@ class Settings(BaseSettings):
     db_size_limit_mb: int = 400
     stale_days: int = 90
 
+    frontend_base_url: str = "http://localhost:5173"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_username: str = ""
+    smtp_password: SecretStr | None = None
+    smtp_security: Literal["starttls", "ssl", "none"] = "starttls"
+    email_from_name: str = "Label Lag Radar"
+    email_from_address: str = ""
+    email_reply_to: str = ""
+    email_footer_address: str = ""
+    email_dry_run: bool = True
+    email_daily_cap: int = 150
+    email_token_secret: SecretStr | None = None
+    turnstile_secret: SecretStr | None = None
+    consent_version: str = "2026-11-14"
+
+    jev_enabled: bool = False
+    typesafe_api_key: SecretStr | None = None
+    typesafe_api_base: str = "https://api.typesafe.ai"
+    jev_model: str = "jev-latest"
+    jev_timeout_s: int = 15
+    jev_daily_cap: int = 500
+    jev_conf_accept: float = Field(default=0.85, ge=0.0, le=1.0)
+
+    rag_use_vectors: bool = False
+    chat_max_tool_calls: int = 6
+    chat_timeout_s: int = 25
+    chat_rate_limit_per_min: int = 10
+
     @field_validator("admin_emails", "cors_origins", "llm_provider_order", mode="before")
     @classmethod
     def _split_csv(cls, value: object) -> object:

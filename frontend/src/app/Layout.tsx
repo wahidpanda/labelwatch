@@ -32,6 +32,11 @@ export function Layout() {
                 </NavLink>
               </li>
               <li>
+                <NavLink to="/bd" className="hover:underline aria-[current=page]:font-semibold">
+                  BD brands
+                </NavLink>
+              </li>
+              <li>
                 <NavLink
                   to="/methodology"
                   className="hover:underline aria-[current=page]:font-semibold"

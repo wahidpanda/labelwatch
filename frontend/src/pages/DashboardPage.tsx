@@ -1,6 +1,7 @@
 import { Link, useSearchParams } from 'react-router'
 
 import { useDrugs, useOverview } from '@/api/queries'
+import { ChatPanel } from '@/components/ChatPanel'
 import { QueryState } from '@/components/QueryState'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatDate, formatDays, formatPercent, title, useDocumentTitle } from '@/lib/format'
@@ -33,6 +34,7 @@ export function DashboardPage() {
 
   return (
     <section aria-labelledby="dashboard-title" className="space-y-10">
+      <ChatPanel />
       <header className="space-y-2">
         <h1 id="dashboard-title" className="text-3xl font-semibold">
           Dashboard

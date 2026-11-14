@@ -6,10 +6,14 @@ from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.config import Settings, get_settings
+from app.db.repositories.bd_brands import BdBrandRepository
 from app.db.repositories.catalog import CatalogRepository
 from app.db.repositories.health import HealthRepository
+from app.db.repositories.subscribers import SubscriberRepository
 from app.ingest.openfda import OpenFdaClient
 from app.llm.factory import StructuredLLM, structured_llm
+from app.services.alerts import AlertsService
+from app.services.bd import BdService
 from app.services.catalog import CatalogService
 from app.services.health import HealthService
 
@@ -52,3 +56,17 @@ async def get_openfda(settings: SettingsDep) -> AsyncIterator[OpenFdaClient]:
 
 
 OpenFdaDep = Annotated[OpenFdaClient, Depends(get_openfda)]
+
+
+def get_bd_service(session: SessionDep) -> BdService:
+    return BdService(BdBrandRepository(session))
+
+
+BdServiceDep = Annotated[BdService, Depends(get_bd_service)]
+
+
+def get_alerts_service(session: SessionDep, settings: SettingsDep) -> AlertsService:
+    return AlertsService(SubscriberRepository(session), settings)
+
+
+AlertsServiceDep = Annotated[AlertsService, Depends(get_alerts_service)]
