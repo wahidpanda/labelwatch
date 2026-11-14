@@ -30,13 +30,17 @@ jobs:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       DATABASE_URL_MIGRATIONS: ${{ secrets.DATABASE_URL_MIGRATIONS }}
       CONTACT_EMAIL: ${{ secrets.CONTACT_EMAIL }}
-      LLM_PROVIDER_ORDER: ${{ vars.LLM_PROVIDER_ORDER || 'google_genai,groq' }}
+      LLM_PROVIDER_ORDER: ${{ vars.LLM_PROVIDER_ORDER || 'google_genai,openrouter,groq' }}
       GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       LLM_MODEL_CLASSIFY_google_genai: ${{ vars.LLM_MODEL_CLASSIFY_GOOGLE_GENAI }}
       LLM_MODEL_JUDGE_google_genai: ${{ vars.LLM_MODEL_JUDGE_GOOGLE_GENAI }}
       LLM_MODEL_CLASSIFY_groq: ${{ vars.LLM_MODEL_CLASSIFY_GROQ }}
       LLM_MODEL_JUDGE_groq: ${{ vars.LLM_MODEL_JUDGE_GROQ }}
+      LLM_MODEL_CLASSIFY_openrouter: ${{ vars.LLM_MODEL_CLASSIFY_OPENROUTER }}
+      LLM_MODEL_JUDGE_openrouter: ${{ vars.LLM_MODEL_JUDGE_OPENROUTER }}
+      LLM_RPS_openrouter: "0.2"
       LLM_RPS_google_genai: "0.2"
       LANGSMITH_TRACING: "false"
       MAX_CALLS: ${{ inputs.max_calls || '40' }}
