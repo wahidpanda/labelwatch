@@ -16,6 +16,7 @@ from app.services.alerts import AlertsService
 from app.services.bd import BdService
 from app.services.catalog import CatalogService
 from app.services.health import HealthService
+from app.services.ops import OpsService
 
 
 async def get_session(request: Request) -> AsyncIterator[AsyncSession]:
@@ -70,3 +71,10 @@ def get_alerts_service(session: SessionDep, settings: SettingsDep) -> AlertsServ
 
 
 AlertsServiceDep = Annotated[AlertsService, Depends(get_alerts_service)]
+
+
+def get_ops_service(session: SessionDep, settings: SettingsDep) -> OpsService:
+    return OpsService(session, settings)
+
+
+OpsServiceDep = Annotated[OpsService, Depends(get_ops_service)]

@@ -17,6 +17,7 @@ from app.middleware import (
     RequestContextMiddleware,
     SecurityHeadersMiddleware,
 )
+from app.middleware_basic_auth import BasicAuthMiddleware
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -53,6 +54,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(RequestContextMiddleware)
+    app.add_middleware(BasicAuthMiddleware, settings=settings)
     register_error_handlers(app)
 
     # Probes also live at the root so hosts can health-check without the API prefix.
