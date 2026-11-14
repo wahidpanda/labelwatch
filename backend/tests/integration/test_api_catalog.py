@@ -152,6 +152,8 @@ async def test_section_text_stale_csv_overview_methodology(api: AsyncClient) -> 
     lines = csv.text.strip().splitlines()
     assert lines[0].startswith("judgement_id,setid")
     assert len(lines) == 2
+    via_query = await api.get("/api/v1/generics/stale", params={"format": "csv"})
+    assert via_query.text == csv.text
 
     overview = (await api.get("/api/v1/stats/overview")).json()
     assert overview["events"] == 1

@@ -21,6 +21,19 @@ export function Layout() {
                   Dashboard
                 </NavLink>
               </li>
+              <li>
+                <NavLink to="/stale" className="hover:underline aria-[current=page]:font-semibold">
+                  Not yet reflected
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/methodology"
+                  className="hover:underline aria-[current=page]:font-semibold"
+                >
+                  Methodology
+                </NavLink>
+              </li>
             </ul>
           </nav>
         </div>

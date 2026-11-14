@@ -132,21 +132,18 @@ STALE_CSV_FIELDS = [
 ]
 
 
-@router.get(
-    "/generics/stale",
-    response_model=Page[StaleGeneric],
-    responses={200: {"content": {"text/csv": {}}}},
-)
+@router.get("/generics/stale", response_model=Page[StaleGeneric])
 async def list_stale_generics(
     service: CatalogServiceDep,
     drug_id: uuid.UUID | None = None,
     min_days: Annotated[int | None, Query(ge=0, le=36500)] = None,
     limit: Limit = 25,
     cursor: Cursor = None,
+    format: Literal["json", "csv"] | None = None,
     accept: Annotated[str | None, Header()] = None,
 ) -> Page[StaleGeneric] | Response:
     offset = decode_cursor(cursor)
-    wants_csv = bool(accept and "text/csv" in accept)
+    wants_csv = format == "csv" or (format is None and bool(accept and "text/csv" in accept))
     items = await service.stale(
         drug_id=drug_id,
         min_days=min_days,

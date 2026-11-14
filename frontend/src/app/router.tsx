@@ -2,7 +2,11 @@ import { createBrowserRouter, createMemoryRouter, type RouteObject } from 'react
 
 import { Layout } from '@/app/Layout'
 import { DashboardPage } from '@/pages/DashboardPage'
+import { DrugPage } from '@/pages/DrugPage'
+import { EventPage } from '@/pages/EventPage'
+import { MethodologyPage } from '@/pages/MethodologyPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { StalePage } from '@/pages/StalePage'
 
 export const routes: RouteObject[] = [
   {
@@ -10,6 +14,10 @@ export const routes: RouteObject[] = [
     element: <Layout />,
     children: [
       { index: true, element: <DashboardPage /> },
+      { path: 'drugs/:drugId', element: <DrugPage /> },
+      { path: 'events/:eventId', element: <EventPage /> },
+      { path: 'stale', element: <StalePage /> },
+      { path: 'methodology', element: <MethodologyPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
