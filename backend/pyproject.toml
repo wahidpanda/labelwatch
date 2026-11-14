@@ -51,7 +51,7 @@ plugins = ["pydantic.mypy"]
 files = ["app", "tests"]
 
 [[tool.mypy.overrides]]
-module = ["vcr", "vcr.*"]
+module = ["vcr", "vcr.*", "rank_bm25"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
