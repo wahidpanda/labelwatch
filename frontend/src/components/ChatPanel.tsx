@@ -34,7 +34,10 @@ export function ChatPanel() {
         <CardTitle className="text-base">Ask the data</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <p className="text-sm text-muted-foreground">Not medical advice. Answers use dashboard stats only.</p>
+        <p className="text-sm text-muted-foreground">
+          Overview assistant (not full agent yet): answers from current dashboard counts only. Not
+          medical advice. For tool-calling chat, more APIs are still being added.
+        </p>
         <div className="flex gap-2">
           <input
             aria-label="Question"

@@ -1,4 +1,5 @@
 import { useMethodology } from '@/api/queries'
+import { MethodologyFlow } from '@/components/MethodologyFlow'
 import { QueryState } from '@/components/QueryState'
 import { useDocumentTitle } from '@/lib/format'
 
@@ -18,6 +19,7 @@ export function MethodologyPage() {
       <h1 id="method-title" className="text-3xl font-semibold">
         Methodology
       </h1>
+      <MethodologyFlow />
       <section aria-labelledby="steps-title" className="space-y-3">
         <h2 id="steps-title" className="text-xl font-semibold">
           How it works
