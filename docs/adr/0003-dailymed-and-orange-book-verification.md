@@ -64,3 +64,19 @@ The Bristol Myers Squibb Coumadin label is no longer on DailyMed. Only two repac
 remain (last published 2012 and 2013). Warfarin brand events after 2013 therefore cannot be
 detected. Warfarin stays in the seed list because Phase 2 acceptance uses it, but it should be
 replaced by a seed whose brand label is still active before reporting headline numbers.
+
+## Live acceptance run (2026-11-14)
+
+`python -m app.worker ingest --drug warfarin --drug montelukast` against a local database:
+
+| Drug | Sets | Versions | Versions with sections |
+| --- | --- | --- | --- |
+| montelukast | 115 (1 brand, 14 generic, 100 repackager) | 532 | 165 |
+| warfarin | 115 (0 active brand, 3 generic, 112 repackager) | 544 | 37 |
+
+The database was 11 MB afterwards (389 unique section texts behind 1,256 section links). A
+second run downloaded nothing and left every row count unchanged.
+
+Many ANDA sets are labelled by a distributor rather than the Orange Book applicant (for
+example a US distributor for an overseas manufacturer), so the repackager heuristic flags
+them. That is conservative: their versions stay in metadata, and `--mode full` downloads them.
