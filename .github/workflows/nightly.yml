@@ -52,7 +52,9 @@ jobs:
           cache-dependency-glob: backend/uv.lock
       - run: uv sync --frozen --no-dev
       - name: Migrate
-        run: uv run python -m app.db.migrate
+        run: |
+          uv run python -m app.db.migrate --repair-checksums
+          uv run python -m app.db.migrate
       - name: Ingest seed and user-added medicines
         run: uv run python -m app.worker ingest --known || true
       - name: Detect and judge

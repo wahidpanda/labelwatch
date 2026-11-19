@@ -5,7 +5,13 @@ import pytest
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.migrate import DEFAULT_MIGRATIONS_DIR, MigrationError, apply_migrations, discover
+from app.db.migrate import (
+    DEFAULT_MIGRATIONS_DIR,
+    MigrationError,
+    apply_migrations,
+    discover,
+    repair_drifted_checksums,
+)
 from app.db.repositories.health import HealthRepository
 from tests.integration.conftest import TEST_DATABASE_URL
 
@@ -13,6 +19,19 @@ from tests.integration.conftest import TEST_DATABASE_URL
 def test_second_run_applies_nothing(migrated_db: list[list[str]]) -> None:
     first, second = migrated_db
     assert first[:2] == ["0001", "0002"]
+    assert second == []
+
+
+async def test_repair_checksums_allows_apply_after_cosmetic_edit(
+    migrated_db: list[list[str]], tmp_path: Path
+) -> None:
+    for path in DEFAULT_MIGRATIONS_DIR.glob("*.sql"):
+        shutil.copy(path, tmp_path / path.name)
+    init = tmp_path / "0001_init.sql"
+    init.write_text(init.read_text(encoding="utf-8") + "\n-- comment only\n", encoding="utf-8")
+    repaired = await repair_drifted_checksums(TEST_DATABASE_URL, tmp_path, versions={"0001"})
+    assert repaired == ["0001"]
+    second = await apply_migrations(TEST_DATABASE_URL, tmp_path)
     assert second == []
 
 

@@ -1,5 +1,6 @@
 """Forward-only SQL migration runner. Usage: python -m app.db.migrate"""
 
+import argparse
 import asyncio
 import hashlib
 import os
@@ -104,10 +105,71 @@ async def apply_migrations(dsn: str, directory: Path = DEFAULT_MIGRATIONS_DIR) -
         await conn.close()
 
 
+async def repair_drifted_checksums(
+    dsn: str,
+    directory: Path = DEFAULT_MIGRATIONS_DIR,
+    *,
+    versions: set[str] | None = None,
+) -> list[str]:
+    """Sync checksums when migration SQL on disk was normalized but already applied in the DB."""
+    migrations = {m.version: m for m in discover(directory)}
+    conn = await asyncpg.connect(to_asyncpg_dsn(dsn), statement_cache_size=0, timeout=30)
+    repaired: list[str] = []
+    try:
+        await conn.execute(_BOOTSTRAP)
+        rows = await conn.fetch("select version, checksum from schema_migrations")
+        for row in rows:
+            version = row["version"]
+            if version not in migrations:
+                continue
+            if versions is not None and version not in versions:
+                continue
+            expected = migrations[version].checksum
+            if row["checksum"] != expected:
+                await conn.execute(
+                    "update schema_migrations set checksum = $1 where version = $2",
+                    expected,
+                    version,
+                )
+                log.warning(
+                    "migration_checksum_repaired",
+                    version=version,
+                    name=migrations[version].name,
+                )
+                repaired.append(version)
+        return repaired
+    finally:
+        await conn.close()
+
+
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Apply Supabase SQL migrations.")
+    parser.add_argument(
+        "--repair-checksums",
+        action="store_true",
+        help="Update checksums for already-applied migrations whose files changed cosmetically.",
+    )
+    parser.add_argument(
+        "--versions",
+        nargs="*",
+        metavar="VERSION",
+        help="Limit --repair-checksums to these migration versions (e.g. 0005).",
+    )
+    args = parser.parse_args()
+
     settings = get_settings()
     configure_logging(settings.log_level, json=settings.env != "dev")
     directory = Path(os.environ.get("MIGRATIONS_DIR", DEFAULT_MIGRATIONS_DIR))
+    version_filter = set(args.versions) if args.versions else None
+
+    if args.repair_checksums:
+        repaired = asyncio.run(
+            repair_drifted_checksums(
+                settings.database_url_migrations, directory, versions=version_filter
+            )
+        )
+        log.info("checksum_repair_done", repaired=repaired)
+
     applied = asyncio.run(apply_migrations(settings.database_url_migrations, directory))
     log.info("migrations_done", applied=applied, up_to_date=not applied)
 
